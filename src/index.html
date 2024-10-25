@@ -1,11 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="application-name" content="to-do">
+    <meta name="generator" content="VSCode">
+    <meta name="keywords" content="to-do, lista de tareas, task">
+    <meta name="description" content="Aplicacion pequeña sobre lista de tareas para la UTP">
     <meta charset="UTF-8">
+    <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="white">
     <title>Document</title>
 </head>
 <body>
-    
+    <header>
+        <div>
+            <h1>Menu</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#"></a></li>
+                <li><a href="#"></a></li>
+                <li><a href="#"></a></li>
+                <li><a href="#"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+
+    </main>
+    <footer></footer>
+    <script>
+        function hola(){
+            fetch('./assets/pages/prueba.html')
+            .then(response => response.text())
+            .then(data => {
+                let div = document.createElement('div');
+                div.innerHTML = data;
+                document.body.appendChild(div);
+            });
+        }
+    </script>
 </body>
 </html>
+
+

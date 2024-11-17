@@ -1,11 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Aplicación para la gestión de tareas, organiza y edita tus tareas fácilmente.">
+    <title>TodoSKyu</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/assets/styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 </head>
 <body>
-    
+    <header class="bg-light py-3 shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="text-primary">Gestor de Tareas</h1>
+            <a href="#task-board" class="btn btn-primary">Ir al Tablero</a>
+        </div>
+    </header>
+
+    <main class="container my-4">
+        <section class="mb-5" aria-labelledby="crear-tarea">
+            <h2 id="crear-tarea" class="h4 mb-3 text-secondary">Crear una Nueva Tarea</h2>
+            <form id="taskForm" class="p-4 bg-white rounded shadow-sm">
+                <div class="mb-3">
+                    <label for="taskName" class="form-label">Nombre de la Tarea</label>
+                    <input type="text" id="taskName" class="form-control" placeholder="Escribe el nombre de la tarea" required>
+                </div>
+                <div class="mb-3">
+                    <label for="taskDescription" class="form-label">Descripción</label>
+                    <textarea id="taskDescription" class="form-control" placeholder="Escribe la descripción" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="taskCategory" class="form-label">Categoría</label>
+                    <select id="taskCategory" class="form-select" required>
+                        <!-- container -->
+                    </select>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="submit" class="btn btn-primary">Agregar Tarea</button>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                        Gestionar Categorías
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section id="task-board" class="mb-5" aria-labelledby="tablero-tareas">
+            <h2 id="tablero-tareas" class="h4 mb-3 text-secondary">Tablero de Tareas</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="bg-white rounded shadow-sm p-3">
+                        <h3 class="h5 text-secondary">Nueva</h3>
+                        <div class="task-list" id="nuevaTasks" role="region" aria-label="Tareas Nuevas"></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="bg-white rounded shadow-sm p-3">
+                        <h3 class="h5 text-secondary">En Progreso</h3>
+                        <div class="task-list" id="en progresoTasks" role="region" aria-label="Tareas en Progreso"></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="bg-white rounded shadow-sm p-3">
+                        <h3 class="h5 text-secondary">Completado</h3>
+                        <div class="task-list" id="culminadaTasks" role="region" aria-label="Tareas Completadas"></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="bg-white rounded shadow-sm p-3">
+                        <h3 class="h5 text-secondary">Pospuesto</h3>
+                        <div class="task-list" id="aplazadaTasks" role="region" aria-label="Tareas Pospuestas"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-light py-4">
+        <div class="container text-center">
+            <p class="mb-0">taskxd</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="categoryModalLabel" class="modal-title">Gestionar Categorías</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <div class="mb-3">
+                            <label for="newCategory" class="form-label">Nueva Categoría (máx. 10 caracteres)</label>
+                            <input type="text" id="newCategory" class="form-control" placeholder="Escribe el nombre" maxlength="10" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Agregar Categoría</button>
+                    </form>
+                    <hr>
+                    <h6 class="mb-3 text-secondary">Categorías Actuales</h6>
+                    <ul id="categoryList" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="taskInfoModal" tabindex="-1" aria-labelledby="taskInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 id="taskInfoModalLabel" class="modal-title">Información de la Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="taskDisplayMode">
+                        <h6 class="fw-bold">Nombre:</h6>
+                        <p id="displayTaskName"></p>
+                        <h6 class="fw-bold">Descripción:</h6>
+                        <p id="displayTaskDescription"></p>
+                        <h6 class="fw-bold">Categoría:</h6>
+                        <p id="displayTaskCategory"></p>
+                        <h6 class="fw-bold">Estado:</h6>
+                        <p id="displayTaskStatus"></p>
+                        <button id="editTaskButton" class="btn btn-primary w-100 mt-3">Editar Tarea</button>
+                    </div>
+
+                    <form id="taskEditForm" class="d-none">
+                        <div class="mb-3">
+                            <label for="editTaskName" class="form-label">Nombre</label>
+                            <input type="text" id="editTaskName" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTaskDescription" class="form-label">Descripción</label>
+                            <textarea id="editTaskDescription" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTaskCategory" class="form-label">Categoría</label>
+                            <select id="editTaskCategory" class="form-select"></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/src/assets/js/tasks.js"></script>
+    <script type="module" src="/src/assets/js/categories.js"></script>
+    <script type="module" src="/src/assets/js/main.js"></script>
+    <!-- SweetAlert2 Script -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -1381,7 +1381,15 @@ window.addEventListener('DOMContentLoaded', function() {
     bindNewExpansionButtons();
     updateScaleVisualizer();
 });
-
+// Cerrar el menú lateral automáticamente al tocar un enlace en vista móvil
+document.querySelectorAll('#navList .nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+        const sb = document.getElementById('sidebar');
+        if (sb && window.innerWidth <= 992) {
+            sb.classList.remove('open');
+        }
+    });
+});
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {

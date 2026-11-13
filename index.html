@@ -1,162 +1,2256 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta name="application-name" content="to-do">
-    <meta name="generator" content="VSCode">
-    <meta name="keywords" content="to-do, lista de tareas, task">
-    <meta name="description" content="Aplicacion pequeña sobre lista de tareas para la UTP">
+<html lang="es" class=""><head></head><body>html
+
+
+
     <meta charset="UTF-8">
-    <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Aplicación para la gestión de tareas, organiza y edita tus tareas fácilmente.">
-    <title>TodoSKyu</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./src/assets/styles/main.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <title>Maestría en Composición Musical y Arreglos Instrumentales (Edición Expandida + Audio HD)</title>
+    <style>
+        :root {
+            --bg-dark: #090c12;
+            --bg-panel: #111621;
+            --bg-card: #182030;
+            --bg-hover: #232e45;
+            --text-main: #edf2f7;
+            --text-muted: #94a3b8;
+            --accent-gold: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --border-color: #2a364f;
+            --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Consolas', 'Courier New', monospace;
+        }
 
-</head>
-<body>
-    <header class="bg-light py-3 shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="text-primary">Gestor de Tareas</h1>
-            <a href="#task-board" class="btn btn-primary">Ir al Tablero</a>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.75;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* BARRA SUPERIOR DE ESTADO DE AUDIO */
+        #audio-banner {
+            position: fixed;
+            top: 0;
+            left: 310px;
+            right: 0;
+            background: linear-gradient(90deg, #131b2e 0%, #1e293b 100%);
+            border-bottom: 2px solid var(--accent-gold);
+            padding: 10px 25px;
+            z-index: 150;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .audio-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+            transition: all 0.3s;
+        }
+
+        .status-dot.ready {
+            background-color: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
+        }
+
+        .audio-controls-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* BARRA LATERAL Y NAVEGACIÓN */
+        #sidebar {
+            width: 310px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 200;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 22px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #111621 0%, #1e293b 100%);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        .sidebar-header p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .search-box {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 10px 0 30px 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-hover);
+            border-left-color: var(--accent-blue);
+        }
+
+        .nav-item.active {
+            background-color: rgba(245, 158, 11, 0.12);
+            border-left-color: var(--accent-gold);
+        }
+
+        .nav-link {
+            display: block;
+            padding: 9px 18px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.86rem;
+            font-weight: 500;
+        }
+
+        .nav-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-lvl0 { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+        .badge-lvl1 { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .badge-lvl2 { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .badge-lvl3 { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+        .badge-lvl4 { background: rgba(245, 158, 11, 0.2); color: var(--accent-gold); }
+        .badge-lvl5 { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+        /* CONTENIDO PRINCIPAL */
+        #main-content {
+            margin-left: 310px;
+            margin-top: 56px;
+            flex-grow: 1;
+            padding: 40px 5%;
+            max-width: 1420px;
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            z-index: 300;
+            cursor: pointer;
+        }
+
+        /* TIPOGRAFÍA Y SECCIONES */
+        .module-section {
+            margin-bottom: 95px;
+            scroll-margin-top: 80px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 65px;
+        }
+
+        .module-header {
+            margin-bottom: 35px;
+            background: linear-gradient(90deg, var(--bg-card) 0%, transparent 100%);
+            padding: 26px;
+            border-left: 5px solid var(--accent-gold);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .module-title {
+            font-size: 2.15rem;
+            color: #fff;
+            margin-top: 6px;
+            line-height: 1.25;
+        }
+
+        .module-subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-top: 8px;
+        }
+
+        h3 {
+            font-size: 1.48rem;
+            color: var(--accent-gold);
+            margin: 38px 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding-bottom: 8px;
+        }
+
+        h4 {
+            font-size: 1.15rem;
+            color: var(--accent-cyan);
+            margin: 22px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #d8dee9;
+        }
+
+        ul, ol {
+            margin: 0 0 22px 26px;
+            color: #d8dee9;
+        }
+
+        li {
+            margin-bottom: 9px;
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        code {
+            background: rgba(255,255,255,0.08);
+            color: var(--accent-cyan);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+        }
+
+        /* TARJETAS Y CAJAS PEDAGÓGICAS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 22px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+            margin: 22px 0;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+        }
+
+        .callout {
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin: 26px 0;
+            border-left: 4px solid;
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .callout-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .callout.why { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.08); }
+        .callout.why .callout-title { color: var(--accent-blue); }
+
+        .callout.mistake { border-color: var(--accent-red); background: rgba(239, 68, 68, 0.08); }
+        .callout.mistake .callout-title { color: var(--accent-red); }
+
+        .callout.pro { border-color: var(--accent-gold); background: rgba(245, 158, 11, 0.08); }
+        .callout.pro .callout-title { color: var(--accent-gold); }
+
+        .callout.exercise { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.08); }
+        .callout.exercise .callout-title { color: var(--accent-green); }
+
+        /* TABLAS */
+        .table-container {
+            overflow-x: auto;
+            margin: 24px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-panel);
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: rgba(255,255,255,0.03);
+        }
+
+        /* BLOQUES DE TABLATURA Y NOTACIÓN */
+        .tab-block {
+            background-color: #070a0f;
+            border: 1px solid #28344a;
+            border-left: 4px solid var(--accent-cyan);
+            padding: 18px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.86rem;
+            line-height: 1.48;
+            color: #a5f3fc;
+            overflow-x: auto;
+            white-space: pre;
+            margin: 18px 0;
+        }
+
+        .tab-label {
+            display: block;
+            color: var(--accent-gold);
+            font-family: var(--font-sans);
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        /* BOTONES E INTERACCIÓN */
+        select, button.btn {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-weight: 600;
+        }
+
+        button.btn-primary {
+            background-color: var(--accent-gold);
+            color: #000;
+            font-weight: 700;
+            border-color: var(--accent-gold);
+        }
+
+        button.btn-primary:hover {
+            background-color: #fbbf24;
+            transform: translateY(-1px);
+        }
+
+        button.btn-audio {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            border: 1px solid var(--accent-blue);
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.btn-audio:hover {
+            background-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* WIDGETS INTERACTIVOS */
+        .interactive-widget {
+            background: linear-gradient(180deg, #161f30 0%, #0d121c 100%);
+            border: 1px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .widget-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* PIANO INTERACTIVO */
+        .piano-wrapper {
+            overflow-x: auto;
+            padding: 12px 0 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .piano-keys {
+            display: flex;
+            position: relative;
+            height: 175px;
+            user-select: none;
+        }
+
+        .key-white {
+            width: 46px;
+            height: 175px;
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+            border: 1px solid #64748b;
+            border-radius: 0 0 6px 6px;
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 10px;
+            color: #1e293b;
+            font-weight: bold;
+            font-size: 0.74rem;
+            transition: transform 0.08s, background 0.1s;
+        }
+
+        .key-white:active, .key-white.playing {
+            background: #93c5fd !important;
+            transform: translateY(2px);
+        }
+
+        .key-black {
+            width: 30px;
+            height: 108px;
+            background: linear-gradient(180deg, #1e293b 0%, #090d16 100%);
+            border: 1px solid #000;
+            border-radius: 0 0 4px 4px;
+            margin-left: -15px;
+            margin-right: -15px;
+            z-index: 2;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 8px;
+            color: #94a3b8;
+            font-size: 0.65rem;
+            transition: transform 0.08s, background 0.1s;
+        }
+
+        .key-black:active, .key-black.playing {
+            background: #3b82f6 !important;
+            color: #fff;
+            transform: translateY(2px);
+        }
+
+        .key-white.in-scale {
+            background: #fef3c7;
+            box-shadow: inset 0 -8px 0 var(--accent-gold);
+        }
+
+        .key-black.in-scale {
+            background: #78350f;
+            color: #fff;
+            box-shadow: inset 0 -6px 0 var(--accent-gold);
+        }
+
+        .key-white.is-root, .key-black.is-root {
+            background: var(--accent-gold) !important;
+            color: #000 !important;
+            font-weight: 900;
+        }
+
+        /* DIAPASÓN DE GUITARRA / BAJO */
+        .fretboard-wrapper {
+            overflow-x: auto;
+            margin-top: 15px;
+            background: #1a120b;
+            border: 2px solid #3c2a21;
+            border-radius: 6px;
+            padding: 15px 10px;
+        }
+
+        .fretboard-row {
+            display: flex;
+            align-items: center;
+            height: 33px;
+            position: relative;
+        }
+
+        .fretboard-row::after {
+            content: '';
+            position: absolute;
+            left: 55px;
+            right: 0;
+            height: 2px;
+            background: #9ca3af;
+            z-index: 1;
+        }
+
+        .string-label {
+            width: 55px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: var(--accent-gold);
+            text-align: center;
+            z-index: 2;
+        }
+
+        .fret-cell {
+            flex: 1;
+            min-width: 52px;
+            height: 100%;
+            border-right: 2px solid #6b7280;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .fret-cell:first-of-type {
+            border-right: 5px solid #e5e7eb;
+            min-width: 44px;
+        }
+
+        .fret-note {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.16;
+            background: #374151;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .fret-note:hover {
+            opacity: 0.85;
+            transform: scale(1.12);
+        }
+
+        .fret-note.active {
+            opacity: 1;
+            background: var(--accent-blue);
+            color: #fff;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.85);
+        }
+
+        .fret-note.root {
+            opacity: 1;
+            background: var(--accent-gold);
+            color: #000;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.95);
+        }
+
+        .fret-numbers {
+            display: flex;
+            padding-left: 55px;
+            margin-top: 6px;
+        }
+
+        .fret-num {
+            flex: 1;
+            min-width: 52px;
+            text-align: center;
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+
+        .fret-num:first-of-type {
+            min-width: 44px;
+        }
+
+        /* SECUENCIADOR DE GROOVE (BATERÍA + BAJO) */
+        .sequencer-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .seq-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 720px;
+        }
+
+        .seq-label {
+            width: 120px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .seq-step {
+            flex: 1;
+            height: 38px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            transition: all 0.1s;
+            user-select: none;
+        }
+
+        .seq-step:nth-child(4n+2) {
+            border-left: 2px solid var(--accent-gold);
+        }
+
+        .seq-step.on-hihat { background-color: var(--accent-cyan); color: #000; font-weight: bold; }
+        .seq-step.on-snare { background-color: var(--accent-red); color: #fff; font-weight: bold; }
+        .seq-step.on-kick { background-color: var(--accent-gold); color: #000; font-weight: bold; }
+        .seq-step.on-bass { background-color: var(--accent-purple); color: #fff; font-weight: bold; }
+
+        .seq-step.current-step {
+            outline: 2px solid #fff;
+            transform: scale(1.07);
+        }
+
+        /* ELEMENTOS DESPLEGABLES (DETAILS) */
+        details {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 14px 0;
+            padding: 14px 18px;
+        }
+
+        summary {
+            font-weight: 700;
+            color: var(--accent-gold);
+            cursor: pointer;
+            font-size: 1.04rem;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        summary::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        details[open] summary {
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* ESPECTRO DE FRECUENCIAS VISUAL */
+        .spectrum-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+            background: #080b10;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .freq-track {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            background: #141a24;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .freq-label {
+            width: 155px;
+            padding-left: 12px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .freq-zone {
+            position: absolute;
+            height: 75%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: #000;
+            opacity: 0.92;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #audio-banner {
+                left: 0;
+            }
+            #main-content {
+                margin-left: 0;
+                padding: 30px 4%;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+
+
+    <!-- BARRA SUPERIOR DE CONTROL DE AUDIO -->
+    <div id="audio-banner">
+        <div class="audio-status-indicator">
+            <span class="status-dot" id="audioStatusDot"></span>
+            <span id="audioStatusText">Motor de Sonido: Haz clic en "Activar y Probar Sonido" o en cualquier tecla para escuchar</span>
         </div>
-    </header>
+        <div class="audio-controls-top">
+            <label style="font-size:0.8rem; color:var(--text-muted);">Volumen:</label>
+            <input type="range" id="masterVolSlider" min="0" max="100" value="80" style="width:90px; cursor:pointer;" oninput="updateMasterVolume(this.value)">
+            <button class="btn btn-primary" onclick="testAudioEngine()">🔊 Activar y Probar Sonido</button>
+        </div>
+    </div>
 
-    <main class="container my-4">
-        <section class="mb-5" aria-labelledby="crear-tarea">
-            <h2 id="crear-tarea" class="h4 mb-3 text-secondary">Crear una Nueva Tarea</h2>
-            <form id="taskForm" class="p-4 bg-white rounded shadow-sm">
-                <div class="mb-3">
-                    <label for="taskName" class="form-label">Nombre de la Tarea</label>
-                    <input type="text" id="taskName" class="form-control" placeholder="Escribe el nombre de la tarea" required>
+    <!-- BOTÓN MÓVIL -->
+    <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Índice</button>
+
+    <!-- BARRA LATERAL -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <h1>ARQUITECTURA MUSICAL</h1>
+            <p>Enciclopedia Interactiva de Composición y Arreglos</p>
+        </div>
+        <div class="search-box">
+            <input type="text" id="navSearch" placeholder="Buscar tema o instrumento..." onkeyup="filterNav()">
+        </div>
+        <ul class="nav-list" id="navList">
+            <li class="nav-item active"><a class="nav-link" href="#mod0"><span class="nav-badge badge-lvl0">Nivel 0 · Cero Absoluto</span><br>0. Física del Sonido y Lenguaje Musical</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod1"><span class="nav-badge badge-lvl1">Nivel 1 · Notas y Escalas</span><br>1. El ADN Musical: Tonos y Escalas</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod2"><span class="nav-badge badge-lvl1">Nivel 1 · Intervalos</span><br>2. Psicología de los Intervalos</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod3"><span class="nav-badge badge-lvl1">Nivel 1 · Acordes</span><br>3. Construcción de Acordes y Funciones</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod4"><span class="nav-badge badge-lvl2">Nivel 2 · Melodía</span><br>4. Melodías, Riffs y Contrapunto</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod5"><span class="nav-badge badge-lvl2">Nivel 2 · Ritmo</span><br>5. Ritmo, Groove, Síncopa y Polirritmia</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod6"><span class="nav-badge badge-lvl3">Nivel 3 · Instrumentos</span><br>6. Los 5 Pilares Instrumentales a Fondo</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod7"><span class="nav-badge badge-lvl3">Nivel 3 · Sección Rítmica</span><br>7. El Motor: Diálogo Bajo y Batería</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod8"><span class="nav-badge badge-lvl4">Nivel 4 · Arreglos</span><br>8. Acústica, Eléctrica y Piano sin Saturar</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod9"><span class="nav-badge badge-lvl4">Nivel 4 · Estructura</span><br>9. Forma, Texturas y Espectro Sónico</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod10"><span class="nav-badge badge-lvl5">Nivel 5 · Avanzado</span><br>10. Armonía Avanzada, Modos y Reharmonización</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod11"><span class="nav-badge badge-lvl5">Nivel 5 · Estilos</span><br>11. Decodificador de Géneros Musicales</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod12"><span class="nav-badge badge-lvl5">Masterclass</span><br>12. Taller: Canción Completa Interactiva</a></li>
+              <li class="nav-item"><a class="nav-link" href="#mod13"><span class="nav-badge badge-lvl4">Nivel 4 · Progresiones</span><br>13. Psicología de Progresiones y Cambios Modales</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod14"><span class="nav-badge badge-lvl4">Nivel 4 · Vientos y Quena</span><br>14. Vientos Andinos (Quena) y Metales</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod15"><span class="nav-badge badge-lvl5">Nivel 5 · Canción y Letra</span><br>15. Prosodia, Letras y Ejercicios de Composición</a></li>
+        </ul>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main id="main-content">
+
+        <!-- =================================================================
+             MÓDULO 0: DE CERO ABSOLUTO — FÍSICA DEL SONIDO Y LENGUAJE MUSICAL
+        ================================================================== -->
+        <section id="mod0" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl0">Nivel 0 · Punto de Partida (Cero Absoluto)</span>
+                <h2 class="module-title">Módulo 0: Qué es la Música, Física del Sonido y Cómo Leer su Lenguaje</h2>
+                <p class="module-subtitle">Antes de tocar una sola nota: comprende por qué ciertos sonidos combinan bien, cómo se nombran las notas en todo el mundo y cómo leer diagramas, tablaturas y ritmos desde cero.</p>
+            </div>
+
+            <p>Muchos cursos empiezan lanzándote escalas y acordes sin explicarte <strong>por qué existen</strong> ni cómo se escriben. Para pensar como compositor y arreglista, primero debemos entender la materia prima con la que trabajamos: <strong>el sonido en el aire y en el tiempo</strong>.</p>
+
+            <h3>0.1 Las 4 Propiedades Físicas del Sonido (y qué significan para un Arreglista)</h3>
+            <p>Cuando golpeas un tambor, pulsas una cuerda de guitarra o presionas una tecla del piano, el objeto vibra y empuja las moléculas de aire creando ondas de presión. Nuestro oído traduce esas ondas en cuatro dimensiones que tú, como compositor, debes controlar:</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>1. Altura o Frecuencia (Pitch — Medido en Hercios, Hz)</h4>
+                    <p>Es la velocidad a la que vibra la onda por segundo. Si una cuerda vibra lento (por ejemplo, <code>55 veces por segundo = 55 Hz</code>), escuchamos un sonido <strong>grave</strong> (un La de bajo eléctrico). Si vibra rápido (<code>440 Hz</code>), escuchamos un sonido <strong>medio-agudo</strong> (un La de guitarra o voz).<br>
+                    <strong>La Ley de la Octava:</strong> Cuando multiplicas cualquier frecuencia exactamente por 2 (de <code>110 Hz</code> a <code>220 Hz</code>, o a <code>440 Hz</code>), el cerebro humano siente que es <strong>la misma nota musical</strong>, pero un piso más arriba. Esa distancia se llama <strong>Octava</strong>.</p>
+                    <button class="btn-audio" onclick="demoOctaves()">🔊 Escuchar La1 (55Hz) → La2 (110Hz) → La3 (220Hz) → La4 (440Hz)</button>
                 </div>
-                <div class="mb-3">
-                    <label for="taskDescription" class="form-label">Descripción</label>
-                    <textarea id="taskDescription" class="form-control" placeholder="Escribe la descripción" rows="3"></textarea>
+
+                <div class="card">
+                    <h4>2. Duración (El Tiempo y el Ritmo)</h4>
+                    <p>Es el tiempo que una nota permanece sonando o el silencio que dejamos entre una nota y otra. Una misma secuencia de notas tocada con duraciones largas suena a balada épica, y tocada con duraciones cortas y percusivas suena a Funk bailable.</p>
                 </div>
-                <div class="mb-3">
-                    <label for="taskCategory" class="form-label">Categoría</label>
-                    <select id="taskCategory" class="form-select" required>
-                        <!-- container -->
-                    </select>
+
+                <div class="card">
+                    <h4>3. Intensidad o Dinámica (Volumen y Energía)</h4>
+                    <p>Es la amplitud de la onda (cuán fuerte golpeas la cuerda o el parche). En composición no solo significa "sonar más fuerte o más suave", sino crear <strong>contraste emocional</strong>: una estrofa susurrada (<em>piano</em>) hace que un estribillo potente (<em>forte</em>) parezca diez veces más grande.</p>
                 </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="submit" class="btn btn-primary">Agregar Tarea</button>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
-                        Gestionar Categorías
-                    </button>
+
+                <div class="card">
+                    <h4>4. Timbre y la Serie Armónica (Por qué cada instrumento es único)</h4>
+                    <p>Si un piano y una guitarra eléctrica tocan exactamente la misma nota <code>La4 (440 Hz)</code> al mismo volumen, ¿por qué los distingues al instante? Porque ningún instrumento acústico produce una onda pura: además de la <strong>Frecuencia Fundamental (440 Hz)</strong>, la cuerda vibra simultáneamente en mitades, tercios y cuartos, generando <strong>Armónicos Superiores (Overtones)</strong>: la octava, la 5ª justa, la doble octava y la 3ª mayor. <em>¡De ahí nacen físicamente los acordes mayores!</em></p>
                 </div>
-            </form>
+            </div>
+
+            <h3>0.2 El Diccionario Universal: Cifrado Latino vs. Cifrado Americano (Anglosajón)</h3>
+            <p>En el mundo profesional de la composición, producción y arreglos, los acordes y notas se escriben universalmente con <strong>letras de la A a la G</strong>. Es imprescindible que domines esta traducción de forma instantánea, teniendo en cuenta que empieza en la nota <strong>La (A)</strong>:</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Letra (Cifrado Universal)</th>
+                            <th>A</th>
+                            <th>B</th>
+                            <th>C</th>
+                            <th>D</th>
+                            <th>E</th>
+                            <th>F</th>
+                            <th>G</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Nombre en Español (Solfeo)</strong></td>
+                            <td><strong>La</strong></td>
+                            <td><strong>Si</strong></td>
+                            <td><strong>Do</strong></td>
+                            <td><strong>Re</strong></td>
+                            <td><strong>Mi</strong></td>
+                            <td><strong>Fa</strong></td>
+                            <td><strong>Sol</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Como Acorde Mayor</strong></td>
+                            <td><code>A</code> (La Mayor)</td>
+                            <td><code>B</code> (Si Mayor)</td>
+                            <td><code>C</code> (Do Mayor)</td>
+                            <td><code>D</code> (Re Mayor)</td>
+                            <td><code>E</code> (Mi Mayor)</td>
+                            <td><code>F</code> (Fa Mayor)</td>
+                            <td><code>G</code> (Sol Mayor)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Como Acorde Menor (+ "m")</strong></td>
+                            <td><code>Am</code> (La menor)</td>
+                            <td><code>Bm</code> (Si menor)</td>
+                            <td><code>Cm</code> (Do menor)</td>
+                            <td><code>Dm</code> (Re menor)</td>
+                            <td><code>Em</code> (Mi menor)</td>
+                            <td><code>Fm</code> (Fa menor)</td>
+                            <td><code>Gm</code> (Sol menor)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escuchar Nota Base</strong></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(69)">🔊 A</button></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(71)">🔊 B</button></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(60)">🔊 C</button></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(62)">🔊 D</button></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(64)">🔊 E</button></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(65)">🔊 F</button></td>
+                            <td><button class="btn-audio" onclick="playSingleNote(67)">🔊 G</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>¿Qué significan los números junto a las notas (ej. C3, A4, E1)? — El Índice Acústico</h4>
+            <p>A lo largo de esta guía verás nombres como <code>E1</code>, <code>C3</code> o <code>C4</code>. El número indica <strong>en qué piso de octava (de grave a agudo)</strong> se encuentra esa nota:</p>
+            <ul>
+                <li><strong>Octavas 1 y 2 (<code>E1</code> a <code>B2</code>):</strong> Zona profunda donde vive el <strong>Bajo Eléctrico</strong> y la mano izquierda grave del piano.</li>
+                <li><strong>Octavas 3 y 4 (<code>C3</code> a <code>B4</code>):</strong> El corazón medio donde habitan la <strong>Guitarra Acústica, la Guitarra Eléctrica, el centro del Piano y la Voz humana</strong>. El famoso "Do Central" del piano se llama <strong><code>C4</code></strong>.</li>
+                <li><strong>Octavas 5 y 6 (<code>C5</code> a <code>B6</code>):</strong> Zona aguda de solos de guitarra, notas altas de piano y brillo.</li>
+            </ul>
+
+            <h3>0.3 Cómo Leer los Diagramas, Tablaturas y Ritmos de esta Guía (En 2 Minutos)</h3>
+            <p>Para que puedas aprovechar todos los talleres sin necesidad de saber leer partitura clásica avanzada, utilizamos tres sistemas visuales muy intuitivos:</p>
+
+            <div class="tab-block"><span class="tab-label">Guía Rápida de Lectura de Tablaturas (Guitarra y Bajo) y Cifrado de Acordes</span>
+1. CÓMO LEER UNA TABLATURA (TAB) DE GUITARRA O BAJO:
+   Las líneas horizontales representan las cuerdas vistas desde arriba (la línea superior es la cuerda más fina/aguda,
+   y la línea inferior es la cuerda más gruesa/grave). Los números indican QUÉ TRASTE debes pisar:
+   - Un "0" significa tocar la cuerda al aire (sin pisar ningún traste).
+   - Si los números están uno tras otro, se tocan en orden (melodía). Si están apilados en vertical, se tocan a la vez (acorde).
+
+   e|---0-----------8---|  &lt;-- Cuerda 1 (Mi agudo): primero al aire (0), luego al final traste 8
+   B|-------1-------8---|  &lt;-- Cuerda 2 (Si)      : traste 1, luego traste 8 junto con las demás
+   G|-----------2---9---|  &lt;-- Cuerda 3 (Sol)     : traste 2, luego traste 9
+   D|-------------------|  &lt;-- Cuerda 4 (Re)
+   A|-------------------|  &lt;-- Cuerda 5 (La)
+   E|-------------------|  &lt;-- Cuerda 6 (Mi grave)
+
+2. CÓMO LEER UN ACORDE COMPACTO DE GUITARRA (Ej: Am7 = x02010):
+   Se leen las 6 cuerdas desde la más gruesa (6ª) hasta la más fina (1ª):
+   x = No tocar esa cuerda | 0 = Cuerda al aire | Número = Traste que debes pisar.
+
+3. LAS DURACIONES DEL RITMO EN UN COMPÁS DE 4/4 (4 pulsos de negra por compás):
+   - Redonda (4 pulsos)  : | [Nota] - - - | (Dura todo el compás)
+   - Blanca (2 pulsos)   : | [Nota] - [Nota] - | (Caben 2 por compás)
+   - Negra (1 pulso)     : | 1   2   3   4   | (El pulso básico del metrónomo)
+   - Corchea (1/2 pulso) : | 1 + 2 + 3 + 4 + | (Caben 8 por compás; el "+" es el contratiempo)
+   - Semicorchea (1/4)   : | 1 e + a 2 e + a 3 e + a 4 e + a | (Caben 16 por compás; la base del Groove)</div>
         </section>
 
-        <section id="task-board" class="mb-5" aria-labelledby="tablero-tareas">
-            <h2 id="tablero-tareas" class="h4 mb-3 text-secondary">Tablero de Tareas</h2>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="bg-white rounded shadow-sm p-3">
-                        <h3 class="h5 text-secondary">Nueva</h3>
-                        <div class="task-list" id="nuevaTasks" role="region" aria-label="Tareas Nuevas"></div>
+        <!-- =================================================================
+             MÓDULO 1: EL ADN DE LA MÚSICA (NOTAS, ALTERACIONES Y ESCALAS)
+        ================================================================== -->
+        <section id="mod1" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl1">Nivel 1 · Notas y Escalas</span>
+                <h2 class="module-title">Módulo 1: El ADN de la Música — Las 12 Notas, Tonos, Semitonos y Escalas</h2>
+                <p class="module-subtitle">Por qué existen teclas negras en el piano, qué son los sostenidos y bemoles, y cómo construir cualquier escala en cualquier instrumento.</p>
+            </div>
+
+            <h3>1.1 Las 12 Notas Cromáticas: Sostenidos (#) y Bemoles (b)</h3>
+            <p>Ya vimos las 7 notas naturales (<code>C - D - E - F - G - A - B</code>). Pero entre casi todas ellas existe una nota intermedia (las teclas negras del piano), sumando en total <strong>12 sonidos distintos por octava</strong>.</p>
+            <ul>
+                <li>La distancia mínima entre dos notas pegadas se llama <strong>Semitono (S)</strong> (equivale a avanzar <strong>1 traste</strong> en la guitarra o el bajo, o pasar a la tecla inmediatamente vecina en el piano).</li>
+                <li>La suma de dos semitonos se llama <strong>Tono (T)</strong> (equivale a avanzar <strong>2 trastes</strong> en la guitarra o el bajo).</li>
+                <li><strong>Sostenido (<code>#</code>):</strong> Sube una nota medio tono (+1 semitono / +1 traste).</li>
+                <li><strong>Bemol (<code>b</code>):</strong> Baja una nota medio tono (-1 semitono / -1 traste).</li>
+                <li><strong>Enarmonía:</strong> Como subir desde <code>Do (C)</code> medio tono te lleva exactamente al mismo lugar que bajar medio tono desde <code>Re (D)</code>, la nota intermedia tiene dos nombres posibles: <strong><code>C#</code> (Do sostenido) = <code>Db</code> (Re bemol)</strong>.</li>
+            </ul>
+
+            <div class="callout pro">
+                <div class="callout-title">🔑 La Regla de Oro de las Teclas Blancas: ¿Dónde NO hay tecla negra?</div>
+                <p>Observa cualquier teclado de piano: entre casi todas las notas naturales hay un Tono completo (con una tecla negra en medio), <strong>EXCEPTO en dos lugares donde solo hay Medio Tono (Semitono directo) y NO existe tecla negra intermedia</strong>:
+                <br>1. Entre <strong>Mi y Fa (<code>E – F</code>)</strong>.
+                <br>2. Entre <strong>Si y Do (<code>B – C</code>)</strong>.
+                <br><em>Truco mnemotécnico:</em> Ambas terminan en la letra "i" en español (M<strong>i</strong>-Fa y S<strong>i</strong>-Do). Si recuerdas esto, jamás te perderás en el diapasón de la guitarra, el bajo ni el piano.</p>
+            </div>
+
+            <h3>1.2 Cómo se Construyen las Escalas (La Paleta del Pintor)</h3>
+            <p>Si intentas componer una canción usando las 12 notas a la vez sin orden, sonará caótico y desafinado. Una <strong>Escala</strong> es un filtro que selecciona 7 notas (o 5 en el caso de las pentatónicas) aplicando una "receta" fija de Tonos (T) y Semitonos (S) a partir de una nota principal llamada <strong>Tónica</strong>.</p>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Fórmula de la Escala Mayor (1 - 2 - 3 - 4 - 5 - 6 - 7)</h4>
+                    <p><strong>Receta de distancias:</strong> <code>T – T – S – T – T – T – S</code>.<br>
+                    Si empezamos en <strong>Do (C)</strong> y aplicamos esta receta, caemos exactamente en las 7 teclas blancas: <code>C – D – E – F – G – A – B</code>. Si empezamos en <strong>Sol (G)</strong>, la misma receta nos obliga a usar <code>F#</code> en lugar de <code>F</code> para mantener la distancia final: <code>G – A – B – C – D – E – F#</code>.</p>
+                </div>
+                <div class="card">
+                    <h4>Fórmula de la Escala Menor Natural (1 - 2 - b3 - 4 - 5 - b6 - b7)</h4>
+                    <p><strong>Receta de distancias:</strong> <code>T – S – T – T – S – T – T</code>.<br>
+                    Comparada con la escala Mayor, rebaja medio tono tres grados clave: el <strong>3º (<code>b3</code>)</strong>, el <strong>6º (<code>b6</code>)</strong> y el <strong>7º (<code>b7</code>)</strong>. Si empezamos en <strong>La (A)</strong>, obtenemos las mismas 7 teclas blancas: <code>A – B – C – D – E – F – G</code>. Por eso <strong>La menor es la Relativa Menor de Do Mayor</strong>.</p>
+                </div>
+            </div>
+
+            <h3>1.3 Laboratorio Interactivo: Explorador de Escalas en Piano, Guitarra y Bajo</h3>
+            <p>Selecciona cualquier Tónica y cualquier Escala. <strong>Haz clic directamente sobre las teclas del piano, los círculos del mástil o el botón "▶ Escuchar Escala"</strong> para oír su sonoridad al instante:</p>
+
+            <!-- WIDGET INTERACTIVO 1: PIANO + MÁSTIL + SINTETIZADOR -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.1rem;">Visualizador y Sintetizador Multinstrumento</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Haz clic en cualquier nota del piano o del diapasón para escucharla individualmente.</p>
+                    </div>
+                    <div class="widget-controls">
+                        <label style="font-size:0.85rem;">Tónica:</label>
+                        <select id="rootSelect" onchange="updateScaleVisualizer()">
+                            <option value="0">C (Do)</option>
+                            <option value="1">C# / Db</option>
+                            <option value="2">D (Re)</option>
+                            <option value="3">D# / Eb</option>
+                            <option value="4">E (Mi)</option>
+                            <option value="5">F (Fa)</option>
+                            <option value="6">F# / Gb</option>
+                            <option value="7">G (Sol)</option>
+                            <option value="8">G# / Ab</option>
+                            <option value="9">A (La)</option>
+                            <option value="10">A# / Bb</option>
+                            <option value="11">B (Si)</option>
+                        </select>
+                        <label style="font-size:0.85rem;">Escala / Modo:</label>
+                       <select id="scaleSelect">
+                            <option value="major">Mayor Natural (Jónica) [2-2-1-2-2-2-1]</option>
+                            <option value="minor">Menor Natural (Eólica) [2-1-2-2-1-2-2]</option>
+                            <option value="pent_minor">Pentatónica Menor / Andina (Quena) [3-2-2-3-2]</option>
+                            <option value="pent_major">Pentatónica Mayor [2-2-3-2-3]</option>
+                            <option value="blues">Escala de Blues (Hexatónica) [3-2-1-1-3-2]</option>
+                            <option value="dorian">Modo Dórico (Funk / Santana / Folk) [2-1-2-2-2-1-2]</option>
+                            <option value="phrygian">Modo Frigio (Oscuro / Metal) [1-2-2-2-1-2-2]</option>
+                            <option value="lydian">Modo Lidio (Cine / Sueño Espacial) [2-2-2-1-2-2-1]</option>
+                            <option value="mixolydian">Modo Mixolidio (Rock / Groove) [2-2-1-2-2-1-2]</option>
+                            <option value="harmonic_minor">Menor Armónica (Clásico / Tango / Salsa) [2-1-2-2-1-3-1]</option>
+                            <option value="melodic_minor">Menor Melódica (Jazz / Cine) [2-1-2-2-2-2-1]</option>
+                            <option value="phrygian_dom">Frigia Dominante (Flamenco / Árabe) [1-3-1-2-1-2-2]</option>
+                            <option value="double_harmonic">Doble Armónica / Bizantina [1-3-1-2-1-3-1]</option>
+                            <option value="hirajoshi">Pentatónica Japonesa (Hirajoshi) [2-1-4-1-4]</option>
+                            <option value="whole_tone">Tonos Enteros (Impresionista / Flotante) [2-2-2-2-2-2]</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="playCurrentScale()">▶ Escuchar Escala</button>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="bg-white rounded shadow-sm p-3">
-                        <h3 class="h5 text-secondary">En Progreso</h3>
-                        <div class="task-list" id="en progresoTasks" role="region" aria-label="Tareas en Progreso"></div>
+
+                <div id="scaleFormulaInfo" style="margin-bottom:15px; padding:12px 15px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:0.88rem;"></div>
+
+                <!-- PIANO RENDER -->
+                <div class="piano-wrapper">
+                    <div class="piano-keys" id="pianoContainer"></div>
+                </div>
+
+                <!-- DIAPASÓN DE GUITARRA / BAJO RENDER -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-top:15px;">
+                    <span style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">Mástil de Guitarra (6 cuerdas) y Bajo Eléctrico (4 cuerdas inferiores: E-A-D-G)</span>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">Dorado = Tónica (Raíz) | Azul = Notas de la Escala (Haz clic en los trastes para escuchar)</span>
+                </div>
+                <div class="fretboard-wrapper" id="fretboardContainer"></div>
+            </div>
+
+<h3>1.4 La Ley Universal del Número 12: Cómo Crear Cualquier Escala desde Cero</h3>
+            <p>Un secreto fundamental que transforma tu mente como compositor es comprender que <strong>tú puedes diseñar o descifrar cualquier escala existente en el planeta (de 5, 6, 7 u 8 notas) siempre y cuando la suma total de sus distancias en semitonos sea exactamente igual a 12</strong>.</p>
+
+            <div class="grid-2">
+                <div class="card" style="border-left: 4px solid var(--accent-gold);">
+                    <h4>¿Por qué la suma SIEMPRE debe dar 12? (La Razón Física y Matemática)</h4>
+                    <p>En el Módulo 0 vimos que una <strong>Octava</strong> ocurre cuando una frecuencia se multiplica exactamente por 2 (por ejemplo, de <code>La 220 Hz</code> a <code>La 440 Hz</code>). En nuestro sistema temperado, esa distancia de octava está dividida en <strong>12 escalones logarítmicos iguales ($\sqrt[12]{2}$) llamados Semitonos</strong>.</p>
+                    <p>Imagina un reloj de 12 horas donde las <code>12 en punto</code> es tu nota Tónica (ej. Do). Cada semitono (S) avanza <strong>1 hora</strong>, cada Tono (T) avanza <strong>2 horas</strong>, y cada Tono y medio (3S, como en la escala menor armónica o pentatónica) avanza <strong>3 horas</strong>:</p>
+                    <ul>
+                        <li>Si la suma de tus pasos da <strong>menos de 12</strong> (ej. 11), cuando termines la escala caerás en <code>Si</code> en lugar de volver a <code>Do</code>, y la escala se desfasará en la siguiente octava.</li>
+                        <li>Si la suma da <strong>exactamente 12</strong>, aterrizas de forma perfecta en la misma Tónica una octava más arriba (el ciclo se cierra sobre sí mismo).</li>
+                    </ul>
+                </div>
+
+                <div class="card" style="border-left: 4px solid var(--accent-cyan);">
+                    <h4>Demostración Matemática en Distintas Culturas</h4>
+                    <p>Convirtamos las fórmulas de Tonos (<code>T = 2</code>), Semitonos (<code>S = 1</code>) y Segundas Aumentadas / Terceras menores (<code>3S = 3</code>) en números simples y sumémoslos:</p>
+                    <ul>
+                        <li><strong>Escala Mayor (7 notas):</strong><br><code>2 + 2 + 1 + 2 + 2 + 2 + 1 = 12 semitonos</code>.</li>
+                        <li><strong>Pentatónica Menor / Andina (5 notas):</strong><br><code>3 + 2 + 2 + 3 + 2 = 12 semitonos</code> (Solo 5 pasos más largos, pero cierra en el mismo 12).</li>
+                        <li><strong>Escala de Blues (6 notas):</strong><br><code>3 + 2 + 1 + 1 + 3 + 2 = 12 semitonos</code>.</li>
+                        <li><strong>Flamenca / Frigia Dominante (7 notas):</strong><br><code>1 + 3 + 1 + 2 + 1 + 2 + 2 = 12 semitonos</code>.</li>
+                        <li><strong>Japonesa Hirajoshi (5 notas):</strong><br><code>2 + 1 + 4 + 1 + 4 = 12 semitonos</code> (Usa saltos de 4 semitonos = 2 tonos).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>1.5 Diccionario Maestro de Fórmulas de Escalas para el Compositor</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre de la Escala / Modo</th>
+                            <th>Fórmula en T y S</th>
+                            <th>Suma Numérica (=12)</th>
+                            <th>Grados (Comparado con Mayor)</th>
+                            <th>Sonoridad y Aplicación Musical</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Mayor (Jónica)</strong></td>
+                            <td><code>T - T - S - T - T - T - S</code></td>
+                            <td><code>2+2+1+2+2+2+1 = 12</code></td>
+                            <td><code>1 - 2 - 3 - 4 - 5 - 6 - 7</code></td>
+                            <td>Alegre, brillante, estable. Pop, Himnos, Country, Clásico.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Menor Natural (Eólica)</strong></td>
+                            <td><code>T - S - T - T - S - T - T</code></td>
+                            <td><code>2+1+2+2+1+2+2 = 12</code></td>
+                            <td><code>1 - 2 - b3 - 4 - 5 - b6 - b7</code></td>
+                            <td>Triste, épica, introspectiva. Baladas, Rock, Pop menor.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pentatónica Menor / Inca</strong></td>
+                            <td><code>1.5T - T - T - 1.5T - T</code></td>
+                            <td><code>3+2+2+3+2 = 12</code></td>
+                            <td><code>1 - b3 - 4 - 5 - b7</code></td>
+                            <td>Universal: base de la <strong>música andina (Quena/Zampoña)</strong>, Rock y Blues.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pentatónica Mayor</strong></td>
+                            <td><code>T - T - 1.5T - T - 1.5T</code></td>
+                            <td><code>2+2+3+2+3 = 12</code></td>
+                            <td><code>1 - 2 - 3 - 5 - 6</code></td>
+                            <td>Pastoral, folklórica, optimista. Melodías vocales universales.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Modo Dórico</strong></td>
+                            <td><code>T - S - T - T - T - S - T</code></td>
+                            <td><code>2+1+2+2+2+1+2 = 12</code></td>
+                            <td><code>1 - 2 - b3 - 4 - 5 - 6 - b7</code></td>
+                            <td>Menor sofisticado y luminoso (la <code>6</code> natural quita lo trágico). Funk, Jazz, Folk Andino.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Modo Frigio</strong></td>
+                            <td><code>S - T - T - T - S - T - T</code></td>
+                            <td><code>1+2+2+2+1+2+2 = 12</code></td>
+                            <td><code>1 - b2 - b3 - 4 - 5 - b6 - b7</code></td>
+                            <td>Oscuro, tenso, misterioso gracias al semitono inicial (<code>b2</code>). Metal, Flamenco, Urbano.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Modo Lidio</strong></td>
+                            <td><code>T - T - T - S - T - T - S</code></td>
+                            <td><code>2+2+2+1+2+2+1 = 12</code></td>
+                            <td><code>1 - 2 - 3 - #4 - 5 - 6 - 7</code></td>
+                            <td>Mágico, flotante, cinematográfico gracias a la <code>#4</code>. Bandas sonoras, Dream Pop.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Modo Mixolidio</strong></td>
+                            <td><code>T - T - S - T - T - S - T</code></td>
+                            <td><code>2+2+1+2+2+1+2 = 12</code></td>
+                            <td><code>1 - 2 - 3 - 4 - 5 - 6 - b7</code></td>
+                            <td>Mayor con espíritu rebelde y bailable (<code>b7</code>). Rock clásico, Funk, Celta, Vallenato/Cumbia.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Menor Armónica</strong></td>
+                            <td><code>T - S - T - T - S - 1.5T - S</code></td>
+                            <td><code>2+1+2+2+1+3+1 = 12</code></td>
+                            <td><code>1 - 2 - b3 - 4 - 5 - b6 - 7</code></td>
+                            <td>Dramática y pasional. El salto de 3 semitonos entre <code>b6</code> y <code>7</code> define el Bolero, Tango y Metal Neoclásico.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Menor Melódica</strong></td>
+                            <td><code>T - S - T - T - T - T - S</code></td>
+                            <td><code>2+1+2+2+2+2+1 = 12</code></td>
+                            <td><code>1 - 2 - b3 - 4 - 5 - 6 - 7</code></td>
+                            <td>Mitad inferior menor (<code>b3</code>), mitad superior Mayor (<code>6 - 7</code>). Jazz moderno y misterio cinematográfico.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Frigia Dominante</strong></td>
+                            <td><code>S - 1.5T - S - T - S - T - T</code></td>
+                            <td><code>1+3+1+2+1+2+2 = 12</code></td>
+                            <td><code>1 - b2 - 3 - 4 - 5 - b6 - b7</code></td>
+                            <td>Exótica, flamenca y árabe. Es el 5º modo de la Menor Armónica; ideal sobre acordes <code>V7</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 2: PSICOLOGÍA DE LOS INTERVALOS (CON AUDICIÓN EN VIVO)
+        ================================================================== -->
+        <section id="mod2" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl1">Nivel 1 · Intervalos</span>
+                <h2 class="module-title">Módulo 2: Psicología de los Intervalos — La Emoción entre Dos Notas</h2>
+                <p class="module-subtitle">Por qué una nota aislada no dice nada, pero la distancia hacia la segunda nota despierta alegría, tristeza, suspenso o peligro.</p>
+            </div>
+
+            <p>Un <strong>Intervalo</strong> es el ladrillo atómico de la música: mide la distancia entre dos notas. Si tocas una nota tras otra, tienes un <strong>Intervalo Melódico</strong> (el motor de las melodías y los riffs). Si las tocas al mismo tiempo, tienes un <strong>Intervalo Armónico</strong> (el motor de los acordes y las segundas voces).</p>
+            <p><strong>Haz clic en los botones de audio de la siguiente tabla</strong> para entrenar tu oído y sentir físicamente la diferencia entre consonancia (reposo) y disonancia (tensión):</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Intervalo</th>
+                            <th>Semitonos (Trastes)</th>
+                            <th>Carácter Psicoacústico</th>
+                            <th>Uso en Composición y Arreglos</th>
+                            <th>Escuchar en Vivo (Base Do)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>2ª menor (b2)</strong></td>
+                            <td>1</td>
+                            <td>Fricción máxima, peligro, oscuridad.</td>
+                            <td>Tema de <em>Tiburón</em>. Riffs de Metal, Frigio y Flamenco.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(1)">🔊 Oír b2 (Do-Reb)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2ª Mayor (2)</strong></td>
+                            <td>2</td>
+                            <td>Narrativo, paso suave, flotante.</td>
+                            <td>Paso natural en melodías vocales y acordes modernos <code>sus2</code>.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(2)">🔊 Oír 2M (Do-Re)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3ª menor (b3)</strong></td>
+                            <td>3</td>
+                            <td>Melancolía, intimidad, seriedad.</td>
+                            <td>Define el carácter de todos los acordes y escalas <strong>menores</strong>.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(3)">🔊 Oír 3m (Do-Mib)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3ª Mayor (3)</strong></td>
+                            <td>4</td>
+                            <td>Luminosidad, calidez, alegría clara.</td>
+                            <td>Define todos los acordes <strong>Mayores</strong>. Excelente para segundas voces.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(4)">🔊 Oír 3M (Do-Mi)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>4ª Justa (4)</strong></td>
+                            <td>5</td>
+                            <td>Llamada heroica, firme o suspendida.</td>
+                            <td>Inicio de himnos, riffs de rock clásico (<em>Smoke on the Water</em>) y <code>sus4</code>.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(5)">🔊 Oír 4J (Do-Fa)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tritono (#4 / b5)</strong></td>
+                            <td>6</td>
+                            <td>Inestabilidad, tensión magnética, blues.</td>
+                            <td>La "Blue Note" y el corazón de los acordes Dominantes (V7) que piden resolver.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(6)">🔊 Oír Tritono (Do-Fa#)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>5ª Justa (5)</strong></td>
+                            <td>7</td>
+                            <td>Potencia pura, estabilidad absoluta, neutro.</td>
+                            <td><em>Power Chords</em> (C5) en guitarra distorsionada y soporte del bajo.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(7)">🔊 Oír 5J (Do-Sol)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>6ª menor (b6) / Mayor (6)</strong></td>
+                            <td>8 / 9</td>
+                            <td>Nostálgico y cinematográfico (b6) o dulce (6).</td>
+                            <td>El intervalo favorito para armonizar guitarras y pianos sin sonar rígido.</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(8)">🔊 b6</button> <button class="btn-audio" onclick="playIntervalDemo(9)">🔊 6M</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>7ª menor (b7) / Mayor (7)</strong></td>
+                            <td>10 / 11</td>
+                            <td>Rebelde/Funk (b7) vs. Sofisticado/Soñador (7).</td>
+                            <td>Añade madurez instantánea a las tríadas simples (<code>m7</code>, <code>7</code>, <code>Maj7</code>).</td>
+                            <td><button class="btn-audio" onclick="playIntervalDemo(10)">🔊 b7</button> <button class="btn-audio" onclick="playIntervalDemo(11)">🔊 7M</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 3: CONSTRUCCIÓN DE ACORDES, EXTENSIONES Y FUNCIONES ARMÓNICAS
+        ================================================================== -->
+        <section id="mod3" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl1">Nivel 1 · Arquitectura Armónica</span>
+                <h2 class="module-title">Módulo 3: Cómo se Construyen los Acordes, sus Colores y la Gravedad Tonal</h2>
+                <p class="module-subtitle">De las tríadas básicas a los acordes con 7ª, 9ª y suspendidos, y cómo enlazarlos con fluidez profesional.</p>
+            </div>
+
+            <h3>3.1 Las Fórmulas de Todos los Acordes (Tríadas, Suspendidos y Cuatríadas)</h3>
+            <p>Un acorde se construye superponiendo intervalos sobre una nota raíz (<strong>1</strong>). Entender el rol de cada nota dentro del acorde te da control total como arreglista:</p>
+            <ul>
+                <li><strong>La 1ª (Fundamental o Raíz):</strong> Da nombre al acorde. Es responsabilidad principal del <strong>Bajo Eléctrico</strong>.</li>
+                <li><strong>La 3ª (Mayor <code>3</code> o menor <code>b3</code>):</strong> Es el corazón emocional del acorde; define si el acorde es alegre (Mayor) o melancólico (menor).</li>
+                <li><strong>La 5ª (Justa <code>5</code>):</strong> Engrosa el sonido pero no aporta color nuevo. En arreglos de Jazz, Pop o R&amp;B, a menudo se omite en la guitarra o el piano para dejar espacio.</li>
+                <li><strong>La 7ª (<code>b7</code> o <code>7</code>) y la 9ª (<code>9</code>):</strong> Son las notas de "perfume" o color cinematográfico.</li>
+            </ul>
+
+            <!-- WIDGET INTERACTIVO 2: CONSTRUCTOR Y AUDICIÓN DE ACORDES Y VOICE LEADING -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.1rem;">Laboratorio Interactivo de Acordes y Conducción de Voces</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Compara en tiempo real el color de cada tipo de acorde sobre cualquier nota raíz.</p>
+                    </div>
+                    <div class="widget-controls">
+                        <label style="font-size:0.85rem;">Raíz del Acorde:</label>
+                        <select id="chordRootSelect">
+                            <option value="60">C (Do)</option>
+                            <option value="62">D (Re)</option>
+                            <option value="64">E (Mi)</option>
+                            <option value="65">F (Fa)</option>
+                            <option value="67">G (Sol)</option>
+                            <option value="69">A (La)</option>
+                            <option value="71">B (Si)</option>
+                        </select>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="bg-white rounded shadow-sm p-3">
-                        <h3 class="h5 text-secondary">Completado</h3>
-                        <div class="task-list" id="culminadaTasks" role="region" aria-label="Tareas Completadas"></div>
+
+                <div class="grid-3">
+                    <div class="card" style="padding:16px;">
+                        <h4 style="margin-top:0;">Tríadas Básicas (3 notas)</h4>
+                        <p style="font-size:0.84rem;">Los pilares de toda canción.</p>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn-audio" onclick="playSelectedChord([0,4,7], 'Mayor (1 - 3 - 5): Estable, claro y luminoso.')">🔊 Mayor</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,3,7], 'Menor (1 - b3 - 5): Melancólico, íntimo y serio.')">🔊 Menor (m)</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,3,6], 'Disminuido (1 - b3 - b5): Tenso e inestable.')">🔊 Disminuido (°)</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,7,12], 'Power Chord (1 - 5 - 8): Sin 3ª, ideal para distorsión.')">🔊 Quinta (5)</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:16px;">
+                        <h4 style="margin-top:0;">Suspendidos y Add9</h4>
+                        <p style="font-size:0.84rem;">Sustituyen o enriquecen la 3ª.</p>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn-audio" onclick="playSelectedChord([0,2,7], 'Sus2 (1 - 2 - 5): Abierto, moderno y flotante (Pop/Indie).')">🔊 sus2</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,5,7], 'Sus4 (1 - 4 - 5): Pide resolver hacia la 3ª Mayor.')">🔊 sus4</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,4,7,14], 'Add9 (1 - 3 - 5 - 9): Tríada mayor con brillo emotivo.')">🔊 add9</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:16px;">
+                        <h4 style="margin-top:0;">Cuatríadas (Con 7ª)</h4>
+                        <p style="font-size:0.84rem;">Sofisticación, R&amp;B, Jazz y Cine.</p>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn-audio" onclick="playSelectedChord([0,4,7,11], 'Maj7 (1 - 3 - 5 - 7): Soñador, nostálgico y elegante.')">🔊 Maj7</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,3,7,10], 'm7 (1 - b3 - 5 - b7): Suave, urbano y lleno de groove.')">🔊 m7</button>
+                            <button class="btn-audio" onclick="playSelectedChord([0,4,7,10], '7 Dominante (1 - 3 - 5 - b7): Contiene tritono, pide resolver.')">🔊 7 (Dom)</button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="bg-white rounded shadow-sm p-3">
-                        <h3 class="h5 text-secondary">Pospuesto</h3>
-                        <div class="task-list" id="aplazadaTasks" role="region" aria-label="Tareas Pospuestas"></div>
+                <div id="chordInfoOutput" style="margin-top:12px; padding:10px 14px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:0.88rem; color:var(--accent-cyan);">
+                    Haz clic en cualquier botón de acorde arriba para escucharlo arpegiado y en bloque.
+                </div>
+            </div>
+
+            <h3>3.2 La Familia de Acordes Diatónicos y las 3 Funciones Armónicas</h3>
+            <p>Cuando compones en una tonalidad (por ejemplo, <strong>Do Mayor</strong>), obtienes automáticamente 7 acordes que pertenecen a esa familia, numerados con números romanos (mayúsculas para acordes Mayores, minúsculas para menores):</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Grado Romano</th>
+                            <th>Tríada / Cuatríada</th>
+                            <th>En Do Mayor</th>
+                            <th>En Sol Mayor</th>
+                            <th>En La menor (Eólica)</th>
+                            <th>Función Armónica (Gravedad)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>I</strong> (en menor: <strong>i</strong>)</td>
+                            <td>Mayor / Maj7</td>
+                            <td><code>C</code> / <code>Cmaj7</code></td>
+                            <td><code>G</code> / <code>Gmaj7</code></td>
+                            <td><code>Am</code> / <code>Am7</code> (i)</td>
+                            <td><strong>Tónica (El Hogar / Reposo)</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ii</strong> (en menor: <strong>ii°</strong>)</td>
+                            <td>menor / m7</td>
+                            <td><code>Dm</code> / <code>Dm7</code></td>
+                            <td><code>Am</code> / <code>Am7</code></td>
+                            <td><code>B°</code> / <code>Bm7b5</code> (ii°)</td>
+                            <td><strong>Subdominante (Viaje / Puente suave)</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>iii</strong> (en menor: <strong>bIII</strong>)</td>
+                            <td>menor / m7</td>
+                            <td><code>Em</code> / <code>Em7</code></td>
+                            <td><code>Bm</code> / <code>Bm7</code></td>
+                            <td><code>C</code> / <code>Cmaj7</code> (bIII)</td>
+                            <td><strong>Tónica débil / Color nostálgico</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>IV</strong> (en menor: <strong>iv</strong>)</td>
+                            <td>Mayor / Maj7</td>
+                            <td><code>F</code> / <code>Fmaj7</code></td>
+                            <td><code>C</code> / <code>Cmaj7</code></td>
+                            <td><code>Dm</code> / <code>Dm7</code> (iv)</td>
+                            <td><strong>Subdominante (Apertura emocional)</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>V</strong> (en menor: <strong>v</strong> o <strong>V7</strong>)</td>
+                            <td>Mayor / 7 (Dom)</td>
+                            <td><code>G</code> / <code>G7</code></td>
+                            <td><code>D</code> / <code>D7</code></td>
+                            <td><code>Em7</code> o <code>E7</code> (V7)</td>
+                            <td><strong>Dominante (Tensión máxima → pide ir a I)</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>vi</strong> (en menor: <strong>bVI</strong>)</td>
+                            <td>menor / m7</td>
+                            <td><code>Am</code> / <code>Am7</code></td>
+                            <td><code>Em</code> / <code>Em7</code></td>
+                            <td><code>F</code> / <code>Fmaj7</code> (bVI)</td>
+                            <td><strong>Tónica Relativa (Hogar emocional)</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>vii°</strong> (en menor: <strong>bVII</strong>)</td>
+                            <td>Disminuido / m7b5</td>
+                            <td><code>B°</code> / <code>Bm7b5</code></td>
+                            <td><code>F#°</code> / <code>F#m7b5</code></td>
+                            <td><code>G</code> / <code>G7</code> (bVII)</td>
+                            <td><strong>Dominante sustituto</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>3.3 Conducción de Voces (Voice Leading) e Inversiones con Audio</h3>
+            <p>Si pasas de <code>Do Mayor (C-E-G)</code> a <code>Fa Mayor (F-A-C)</code> y luego a <code>Sol Mayor (G-B-D)</code> saltando con toda la mano por el instrumento, las voces dan saltos bruscos. En cambio, si usas <strong>Inversiones</strong> (cambiar el orden de las notas para mantener fijas las notas comunes y mover las demás solo 1 o 2 trastes/teclas), logras el sonido sedoso de los discos profesionales. <strong>Escucha la diferencia real haciendo clic abajo:</strong></p>
+
+            <div style="display:flex; gap:15px; flex-wrap:wrap; margin:18px 0;">
+                <button class="btn btn-audio" style="padding:10px 16px; font-size:0.9rem;" onclick="demoVoiceLeading(false)">❌ Escuchar Progresión C → F → G → C (Con saltos bruscos de principiante)</button>
+                <button class="btn btn-primary" onclick="demoVoiceLeading(true)">✅ Escuchar Progresión C → F → G → C (Con Conducción de Voces Profesional)</button>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 4: MELODÍAS, RIFFS Y CONTRAPUNTO
+        ================================================================== -->
+        <section id="mod4" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl2">Nivel 2 · Creación Melódica</span>
+                <h2 class="module-title">Módulo 4: Composición de Melodías, Riffs, Solos y Contrapunto</h2>
+                <p class="module-subtitle">Cómo transformar escalas inertes en ganchos vocales e instrumentales inolvidables.</p>
+            </div>
+
+            <h3>4.1 Las 4 Leyes de una Gran Melodía Vocal o Instrumental</h3>
+            <ol>
+                <li><strong>El Motivo Rítmico-Melódico (La Semilla):</strong> No intentes inventar 8 compases distintos sin repetir nada; el oyente se perderá. Crea una célula corta de 3 a 5 notas con un ritmo muy marcado y <strong>repítela cambiando ligeramente las alturas</strong> cuando cambie el acorde de abajo.</li>
+                <li><strong>Equilibrio entre Grados Conjuntos (80%) y Saltos (20%):</strong> Una melodía cantable se mueve la mayor parte del tiempo por notas vecinas de la escala, reservando un salto amplio (una 5ª o 6ª hacia arriba) para la palabra más emocional de la frase.</li>
+                <li><strong>Pregunta (Incompleta) y Respuesta (Resolutiva):</strong> Termina tu primera frase de 2 compases en el grado <code>2</code>, <code>3</code> o <code>5</code> de la escala (deja la idea abierta en el aire), y termina la segunda frase en la Tónica <code>1</code> (cierra la idea con autoridad).</li>
+                <li><strong>Contraste entre Estrofa y Estribillo:</strong> Si tu Estrofa se mueve en notas cortas alrededor del grado <code>1</code> al <code>5</code> en la octava 4, tu Estribillo debe despegar una 3ª o 5ª más arriba (octava 5) con notas más largas y abiertas.</li>
+            </ol>
+
+            <h3>4.2 Cómo Construir un Riff Icónico y un Solo con Narrativa</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Anatomía de un Riff Inolvidable</h4>
+                    <p>Los mejores riffs (<em>Seven Nation Army, Smoke on the Water, Back in Black, Day Tripper</em>) cumplen tres condiciones:</p>
+                    <ul>
+                        <li>Usan la <strong>Escala Pentatónica Menor o Blues</strong> (solo 5 o 6 notas).</li>
+                        <li>Tienen <strong>huecos de silencio (Staccato)</strong> donde la batería responde.</li>
+                        <li>Combinan una nota grave repetida (pedal) con un salto hacia la <code>b3</code>, la <code>4ª</code> o la <code>b7</code>.</li>
+                    </ul>
+                    <button class="btn-audio" onclick="demoRiffAudio()">🔊 Escuchar Ejemplo de Riff Pentatónico con Silencios</button>
+                </div>
+
+                <div class="card">
+                    <h4>Cómo Escribir un Solo que Cuente una Historia</h4>
+                    <p>Un solo de guitarra o teclado que lanza 50 notas por segundo desde el compás 1 aburre a los tres segundos. Estructura todo solo en <strong>3 Actos</strong>:</p>
+                    <ul>
+                        <li><strong>Acto 1 (Compases 1-2 — El Gancho):</strong> Registro medio, pocas notas, una melodía que un niño pueda silbar.</li>
+                        <li><strong>Acto 2 (Compases 3-6 — El Desarrollo):</strong> Sube de registro, añade secuencias rítmicas, bendings y síncopa.</li>
+                        <li><strong>Acto 3 (Compases 7-8 — El Clímax):</strong> Alcanza la nota más aguda del solo en el compás 7 y aterriza limpiamente en una nota del acorde en el compás 8.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 5: RITMO, GROOVE, SÍNCOPA Y POLIRRITMIA
+        ================================================================== -->
+        <section id="mod5" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl2">Nivel 2 · El Motor Temporal</span>
+                <h2 class="module-title">Módulo 5: Ritmo, Groove, Compás, Síncopa y Polirritmia</h2>
+                <p class="module-subtitle">Cómo dominar el tiempo, la subdivisión y el acento para que tu música tenga vida propia.</p>
+            </div>
+
+            <h3>5.1 Compases Más Usados y Qué Sensación Transmiten</h3>
+            <ul>
+                <li><strong>4/4 (Cuatro por cuatro):</strong> El estándar del 90% del Pop, Rock, Funk, Hip-Hop y Música Electrónica. Cuatro pulsos de negra por compás (<code>1 - 2 - 3 - 4</code>), con el golpe de caja (<em>Backbeat</em>) clavado en los tiempos <strong>2 y 4</strong>.</li>
+                <li><strong>6/8 o 12/8 (Compás Compuesto de Subdivisión Ternaria):</strong> Cada pulso grande se divide en <strong>3 corcheas</strong> (<code>1-2-3, 4-5-6</code>). Tiene un balanceo circular y emotivo inconfundible (<em>Nothing Else Matters</em> de Metallica, <em>We Are the Champions</em> de Queen, <em>Hallelujah</em>, Baladas Soul/Blues).</li>
+                <li><strong>3/4 (Vals) y 5/4 o 7/8 (Compases Irregulares):</strong> El 3/4 fluye como un péndulo elegante; el 5/4 (<em>Take Five</em>) o el 7/8 (<em>Money</em> de Pink Floyd) crean una sensación de urgencia hipnótica porque "falta o sobra" un pulso.</li>
+            </ul>
+
+            <h3>5.2 Síncopa y Anticipo Armónico (El "Push")</h3>
+            <p>Cuando una banda principiante cambia de acorde, todos caen rígidamente en el tiempo <code>1</code> de cada compás. Un arreglista profesional utiliza el <strong>Anticipo Sincopado (Push)</strong>: hace que el acorde nuevo (junto con el bombo, el bajo y un golpe de guitarra/piano) entre <strong>media corchea antes (en el <code>4+</code> del compás anterior)</strong> y se quede ligado durante el tiempo 1. Esto impulsa la canción hacia adelante como una ola.</p>
+
+            <div class="tab-block"><span class="tab-label">Visualización de Subdivisión de 16 Semicorcheas y el Tresillo Latino/Urbano (3+3+2)</span>
+Subdivisión 16th : | 1   e   +   a   2   e   +   a   3   e   +   a   4   e   +   a |
+Acento Cuadrado  : | X               X               X               X             | (Pulso plano de marcha)
+Tresillo (3+3+2) : | X       .   .   X       .   .   X   .   .   .   (Repite...)   | (Acentos en casillas 1, 4 y 7)</div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 6: LOS 5 PILARES INSTRUMENTALES A FONDO
+        ================================================================== -->
+        <section id="mod6" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl3">Nivel 3 · Orquestación Moderna</span>
+                <h2 class="module-title">Módulo 6: Los 5 Pilares Instrumentales a Fondo</h2>
+                <p class="module-subtitle">Registros, afinación, anatomía, técnicas y rol exacto de Bajo, Batería, Guitarra Acústica, Guitarra Eléctrica y Piano.</p>
+            </div>
+
+            <details open="">
+                <summary>1. El Bajo Eléctrico: El Cimiento Armónico y Rítmico</summary>
+                <p><strong>Afinación (4 cuerdas, de grave a agudo):</strong> <code>E1 (41 Hz) – A1 (55 Hz) – D2 (73 Hz) – G2 (98 Hz)</code>.</p>
+                <ul>
+                    <li><strong>Por qué es tan poderoso:</strong> El oído humano construye su percepción del acorde desde la nota más grave hacia arriba. Si el guitarrista toca un acorde de <code>Do Mayor (C)</code>, pero el bajista toca un <code>La (A)</code>, todo el público escucha un <strong>La menor 7 (Am7)</strong>. Si el bajista toca un <code>Fa (F)</code> debajo de ese Do Mayor, suena un tenso <strong>Fmaj9(sus4)</strong>.</li>
+                    <li><strong>Qué evitar:</strong> Nunca toques acordes cerrados de 3 o 4 notas en las cuerdas graves del bajo (entre 40 Hz y 120 Hz las ondas son tan anchas que chocan y producen lodo ininteligible). En el registro grave, el bajo es <strong>monofónico</strong> (una nota a la vez).</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>2. La Batería: El Arquitecto del Tiempo y la Energía</summary>
+                <p>Divide mentalmente la batería en 3 pisos que nunca deben saturarse a la vez sin propósito:</p>
+                <ul>
+                    <li><strong>Piso Inferior (Bombo / Kick):</strong> Marca los acentos graves del compás junto al bajo eléctrico.</li>
+                    <li><strong>Piso Central (Caja / Snare y Toms):</strong> La caja en el 2 y 4 es el ancla del oyente. Los <em>Rellenos (Fills)</em> de caja y toms sirven como señales de tráfico: avisan al oyente de que termina una sección de 4 u 8 compases y empieza otra nueva.</li>
+                    <li><strong>Piso Superior (Hi-Hat, Ride y Crashes):</strong> Define la apertura espacial. Pasar del Hi-Hat cerrado en la estrofa al Plato Ride o Hi-Hat abierto en el estribillo eleva la energía un 50% de forma automática.</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>3. La Guitarra Acústica: Calidez Orgánica y Motor Rítmico</summary>
+                <p><strong>Afinación (6 cuerdas):</strong> <code>E2 – A2 – D3 – G3 – B3 – E4</code>.</p>
+                <ul>
+                    <li><strong>En grabaciones solistas o baladas íntimas:</strong> Ocupa todo el espectro: el pulgar toca los bajos en las cuerdas 6, 5 y 4, mientras los dedos índice, medio y anular arpegian las cuerdas 3, 2 y 1.</li>
+                    <li><strong>En arreglos de banda completa (con bajo y batería):</strong> Su función cambia radicalmente. Ya no necesitamos sus graves (que chocarían con el bajo y el piano); necesitamos el <strong>ataque percusivo y cristalino de la púa rasgueando las cuerdas metálicas</strong> como pegamento rítmico.</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>4. La Guitarra Eléctrica: El Especialista en Texturas, Riffs y Tríadas</summary>
+                <p>Comparte la misma afinación que la acústica, pero su comportamiento depende de la ganancia (distorsión):</p>
+                <ul>
+                    <li><strong>Con mucha distorsión (Rock/Metal):</strong> Toca únicamente <em>Power Chords</em> (1ª y 5ª), octavas o riffs de una sola nota. Si rasgueas las 6 cuerdas con distorsión en acordes con 3ª y 7ª, los armónicos intermodulan y ensucian la mezcla.</li>
+                    <li><strong>Con sonido limpio o ligero Overdrive (Pop, Indie, Funk, Soul):</strong> Evita tocar acordes gigantescos de 6 cuerdas con cejilla si ya hay un piano o una guitarra acústica. Usa <strong>pequeñas tríadas de 3 cuerdas (en las cuerdas G, B y E)</strong> en la mitad superior del mástil.</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>5. El Piano (y Teclados): La Orquesta en Diez Dedos</summary>
+                <p><strong>Registro completo:</strong> 88 teclas (<code>A0</code> a <code>C8</code>).</p>
+                <ul>
+                    <li><strong>Regla de Oro para el Pianista en Banda:</strong> "¡Mano izquierda arriba del traste del bajista!". Cuando tocas con bajista, tu mano izquierda no debe martillar octavas en la zona de <code>C1-C2</code>. Sube tu mano izquierda a <code>C3</code> o limítate a tocar acordes repartidos entre ambas manos en el registro central (<code>C3 a C5</code>).</li>
+                    <li><strong>Articulación:</strong> Puedes usar el piano de forma <em>percusiva y rítmica</em> (marcando negras o síncopas estilo Elton John, Coldplay o Salsa) o de forma <em>lírica y sostenida</em> con el pedal de sustain en baladas.</li>
+                </ul>
+            </details>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 7: EL MOTOR — DIÁLOGO BAJO Y BATERÍA (SECUENCIADOR)
+        ================================================================== -->
+        <section id="mod7" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl3">Nivel 3 · La Sección Rítmica</span>
+                <h2 class="module-title">Módulo 7: El Motor de la Canción — Cómo Construir Líneas de Bajo que Dialoguen con la Batería</h2>
+                <p class="module-subtitle">Técnicas prácticas para unir el bombo con el bajo eléctrico y conectar acordes con elegancia.</p>
+            </div>
+
+            <h3>7.1 Las 5 Técnicas para Conectar Acordes desde el Bajo</h3>
+            <p>Cuando el acorde cambia de <code>Do Mayor (C)</code> a <code>La menor (Am)</code>, un bajista principiante se queda golpeando únicamente la nota Do durante 4 tiempos y luego salta a La. Un bajista y arreglista completo utiliza este arsenal:</p>
+            <ol>
+                <li><strong>El Golpe Gemelo con el Bombo:</strong> Cada vez que el baterista pisa el pedal del bombo, el bajista pulsa la nota fundamental del acorde. Esto crea un "superinstrumento" donde el bombo pone el ataque de pecho y el bajo pone la nota musical.</li>
+                <li><strong>Silencio en la Caja (Tiempos 2 y 4):</strong> Apagar la cuerda del bajo justo cuando suena la caja de la batería genera un rebote elástico irresistible (<em>Funk, Pop moderno, Disco</em>).</li>
+                <li><strong>Quintas y Octavas:</strong> Alternar la raíz (1ª) con su 5ª justa o su 8ª superior en los contratiempos (<code>+</code>) mantiene el movimiento armónico sin chocar con la melodía vocal.</li>
+                <li><strong>Notas de Paso Escalar (Walking / Conducción):</strong> En el tiempo 4 del compás, usar una nota de la escala para caminar hacia el siguiente acorde (ej. para ir de <code>Do</code> a <code>La</code>, tocar <code>Do - Si - La</code>).</li>
+                <li><strong>Aproximación Cromática (A un traste de distancia):</strong> Tocar la nota situada exactamente 1 semitono (1 traste) por debajo o por encima del acorde destino en la última corchea o semicorchea del compás.</li>
+            </ol>
+
+            <!-- WIDGET INTERACTIVO 3: SECUENCIADOR DE GROOVE BAJO + BATERÍA -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.1rem;">Secuenciador en Tiempo Real: Batería + Bajo Eléctrico (16 Semicorcheas)</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Pulsa "▶ Reproducir Groove" y haz clic en cualquier casilla para encender o apagar golpes en vivo.</p>
+                    </div>
+                    <div class="widget-controls">
+                        <select id="groovePreset" onchange="loadGroovePreset()">
+                            <option value="rock">Preset 1: Rock / Pop Clásico (Bloqueo Bombo-Bajo)</option>
+                            <option value="funk">Preset 2: Funk Sincopado (Huecos en Caja + 16th)</option>
+                            <option value="motown">Preset 3: Soul / Indie Melódico (Anticipos)</option>
+                            <option value="reggaeton">Preset 4: Urbano / Pop Latino (Tresillo 3+3+2)</option>
+                        </select>
+                        <button class="btn btn-primary" id="playSeqBtn" onclick="toggleSequencer()">▶ Reproducir Groove</button>
                     </div>
                 </div>
+
+                <div class="sequencer-grid" id="sequencerGrid"></div>
+                <p id="grooveExplanation" style="margin-top:14px; font-size:0.86rem; color:var(--accent-cyan); background:rgba(0,0,0,0.35); padding:12px; border-radius:6px;"></p>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 8: CÓMO COMBINAR ACÚSTICA, ELÉCTRICA Y PIANO SIN SATURAR
+        ================================================================== -->
+        <section id="mod8" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · Arreglos Instrumentales</span>
+                <h2 class="module-title">Módulo 8: El Triángulo Armónico — Cómo Combinar Guitarra Acústica, Eléctrica y Piano sin Saturar</h2>
+                <p class="module-subtitle">Estrategias profesionales para que tres instrumentos armónicos suenen amplios, nítidos y complementarios.</p>
+            </div>
+
+            <p>El mayor enemigo de un arreglo instrumental es el <strong>Enmascaramiento de Frecuencias (Frequency Masking)</strong>: cuando el Piano, la Guitarra Acústica y la Guitarra Eléctrica tocan los mismos acordes, en la misma octava (entre <code>200 Hz y 1.5 kHz</code>) y con el mismo ritmo, sus ondas se superponen, entierran a la voz principal y hacen que la canción suene pequeña y confusa.</p>
+
+            <h3>8.1 Las 4 Reglas de Oro de Convivencia Armónica</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Regla 1: Ley de Densidad Inversa</h4>
+                    <p>Cuantos más instrumentos suenen al mismo tiempo en una sección, <strong>menos notas debe tocar cada instrumento</strong>. Si un pianista toca solo, usa 6 u 8 notas. Si toca junto a dos guitarras y un bajo, cada instrumento debe reducirse a 2 o 3 notas perfectamente elegidas.</p>
+                </div>
+                <div class="card">
+                    <h4>Regla 2: Asignación de Pisos de Octava</h4>
+                    <p>Divide el registro: si el <strong>Piano</strong> ocupa la Octava 3-4 con acordes cálidos, la <strong>Guitarra Eléctrica</strong> tiene prohibido tocar en los primeros 5 trastes; debe subir a los trastes 7 al 14 en las tres primeras cuerdas (Octava 4-5).</p>
+                </div>
+                <div class="card">
+                    <h4>Regla 3: Contraste Rítmico (Largo vs. Corto)</h4>
+                    <p>Nunca hagas que dos instrumentos rasgueen o golpeen ritmos distintos pero igual de densos en el centro. Si la <strong>Guitarra Acústica</strong> lleva la subdivisión rápida de corcheas/semicorcheas, el <strong>Piano</strong> debe tocar redondas o blancas largas como "colchón", y la <strong>Eléctrica</strong> puede hacer un motivo puntual.</p>
+                </div>
+                <div class="card">
+                    <h4>Regla 4: Panorama Estéreo (Izquierda / Centro / Derecha)</h4>
+                    <p>Deja el centro exacto para la <strong>Voz Principal, el Bombo, la Caja y el Bajo</strong>. Abre la Guitarra Acústica y la Guitarra Eléctrica hacia los lados opuestos (por ejemplo, Acústica 60% a la izquierda, Eléctrica 60% a la derecha) para que el oyente las distinga con claridad espacial.</p>
+                </div>
+            </div>
+
+            <h3>8.2 Diagrama de Reparto Instrumental sobre C – G – Am – F</h3>
+            <div class="tab-block"><span class="tab-label">Esquema Maestro de Separación: Mismo Acorde, 3 Posiciones y Funciones Distintas</span>
+ INSTRUMENTO        | REGISTRO / ZONA      | QUÉ TOCA EN C -&gt; G -&gt; Am -&gt; F                   | FUNCIÓN EN LA MEZCLA
+--------------------+----------------------+-------------------------------------------------+----------------------------------
+ 1. PIANO           | Octava 3 y 4 (Medio) | Acordes en inversión suave (blancas/redondas):  | Cuerpo armónico cálido y sostén.
+                    |                      | [E4-G4-C5] -&gt; [D4-G4-B4] -&gt; [E4-A4-C5] -&gt; [F-A-C]|
+--------------------+----------------------+-------------------------------------------------+----------------------------------
+ 2. GTR. ACÚSTICA   | Cuerdas abiertas     | Acordes con notas pedales Sol3 y Re4 fijas:     | Brillo percusivo de alta frecuencia
+                    | (Énfasis en agudos)  | Cadd9 (x32033) -&gt; G (320033) -&gt; Am7 (x02013)    | (actúa como shaker armónico).
+--------------------+----------------------+-------------------------------------------------+----------------------------------
+ 3. GTR. ELÉCTRICA  | Trastes 7 a 12       | Tríadas agudas o arpegio con Delay en cuerdas   | Gancho cristalino superior (Ear Candy)
+                    | (Cuerdas 1, 2 y 3)   | finas: [9-8-8] -&gt; [7-8-7] -&gt; [9-10-8] -&gt; [10-10-8]| sin ensuciar los medios-graves.</div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 9: FORMA, TEXTURAS Y ESPECTRO DE FRECUENCIAS
+        ================================================================== -->
+        <section id="mod9" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · Macroestructura y Dinámica</span>
+                <h2 class="module-title">Módulo 9: Estructura de Canciones, Transiciones, Tensión y Espectro</h2>
+                <p class="module-subtitle">Cómo organizar la entrada y salida de instrumentos para que la canción crezca y emocione.</p>
+            </div>
+
+            <h3>9.1 Distribución Vertical del Espectro Acústico</h3>
+            <div class="spectrum-bar">
+                <div class="freq-track">
+                    <div class="freq-label" style="color:var(--accent-gold);">Bombo (Kick)</div>
+                    <div class="freq-zone" style="left:18%; width:14%; background:var(--accent-gold);">50 - 100 Hz (Sub/Golpe)</div>
+                    <div class="freq-zone" style="left:62%; width:12%; background:rgba(245,158,11,0.5);">2-4 kHz (Click)</div>
+                </div>
+                <div class="freq-track">
+                    <div class="freq-label" style="color:var(--accent-purple);">Bajo Eléctrico</div>
+                    <div class="freq-zone" style="left:22%; width:22%; background:var(--accent-purple); color:#fff;">60 - 250 Hz (Fundamental)</div>
+                    <div class="freq-zone" style="left:50%; width:12%; background:rgba(139,92,246,0.5); color:#fff;">700-1.2k (Dedos/Púa)</div>
+                </div>
+                <div class="freq-track">
+                    <div class="freq-label" style="color:var(--accent-blue);">Piano / Guitarras</div>
+                    <div class="freq-zone" style="left:36%; width:34%; background:var(--accent-blue); color:#fff;">200 Hz - 2.5 kHz (Repartir por Octavas)</div>
+                </div>
+                <div class="freq-track">
+                    <div class="freq-label" style="color:var(--accent-green);">Voz Principal / Lead</div>
+                    <div class="freq-zone" style="left:42%; width:32%; background:var(--accent-green);">300 Hz - 4 kHz (Protagonista Central)</div>
+                </div>
+                <div class="freq-track">
+                    <div class="freq-label" style="color:var(--accent-cyan);">Platos / Acústica</div>
+                    <div class="freq-zone" style="left:68%; width:28%; background:var(--accent-cyan);">4 kHz - 16 kHz (Aire y Brillo)</div>
+                </div>
+            </div>
+
+            <h3>9.2 Cómo Crear Transiciones Profesionales entre Secciones</h3>
+            <p>El paso de la Estrofa al Pre-Estribillo, y del Pre-Estribillo al Estribillo, es donde se gana o se pierde la emoción del oyente. Utiliza estas tres herramientas de transición:</p>
+            <ul>
+                <li><strong>1. El Silencio Dramático (Stop-Time / Drop):</strong> En el último tiempo (pulso 4) del Pre-Estribillo, calla repentinamente a toda la banda (bajo, guitarras, piano y batería) dejando sola a la voz cantando la primera palabra del Estribillo antes de que explote el golpe de Crash y Bombo en el pulso 1.</li>
+                <li><strong>2. La Nota Pedal de Tensión en el Bajo:</strong> Durante todo el Pre-Estribillo, aunque el piano y las guitarras cambien de acordes arriba (por ejemplo, <code>Dm → F → C → G</code>), ordena al bajista que se quede machacando en corcheas la nota <strong>Sol (el grado V dominante)</strong>. Esa fricción acumulada hará que la llegada al acorde <code>I</code> del Estribillo sea liberadora.</li>
+                <li><strong>3. Cierre y Apertura del Registro:</strong> En el Pre-Estribillo estrecha el arreglo hacia el centro; al entrar el Estribillo, extiende el bajo una octava más abajo y las guitarras/voces una octava más arriba.</li>
+            </ul>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 10: ARMONÍA AVANZADA, MODOS Y REHARMONIZACIÓN
+        ================================================================== -->
+        <section id="mod10" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl5">Nivel 5 · Composición Avanzada</span>
+                <h2 class="module-title">Módulo 10: Armonía Avanzada, Dominantes Secundarios, Modos y Reharmonización</h2>
+                <p class="module-subtitle">Herramientas de nivel profesional para añadir giros inesperados, color modal y sofisticación armónica.</p>
+            </div>
+
+            <h3>10.1 Dominantes Secundarios y Sustitución Tritonal</h3>
+            <p>Cualquier acorde Mayor o menor de tu tonalidad (excepto el vii°) puede ser precedido por su propio acorde <strong>V7 Dominante</strong> para crear una atracción gravitacional intensa. Escucha cómo cambia una progresión normal cuando insertamos dominantes secundarios:</p>
+            <ul>
+                <li><strong><code>V7/vi</code> (En Do Mayor es <code>E7 → Am</code>):</strong> Transforma el suave <code>Em</code> en un <code>E7</code> con la nota <code>Sol#</code>, que sube medio tono directamente hacia la tónica de <code>Am</code>.</li>
+                <li><strong><code>V7/ii</code> (En Do Mayor es <code>A7 → Dm</code>):</strong> Añade el <code>Do#</code> para empujar hacia <code>Dm</code>.</li>
+                <li><strong><code>V7/IV</code> (En Do Mayor es <code>C7 → F</code>):</strong> Añade el <code>Sib</code> al acorde de tónica justo antes de viajar al cuarto grado.</li>
+                <li><strong>Sustitución Tritonal (<code>bII7 → I</code>):</strong> Como el acorde <code>G7</code> (notas Si y Fa) comparte exactamente el mismo tritono que el acorde <code>Db7</code> (notas Fa y Dob/Si), puedes sustituir <code>G7</code> por <strong><code>Db7</code></strong> antes de resolver a <code>Cmaj7</code>, creando un descenso cromático de lujo en el bajo: <code>Re (Dm7) → Reb (Db7) → Do (Cmaj7)</code>.</li>
+            </ul>
+
+            <h3>10.2 Intercambio Modal (Préstamo de Acordes)</h3>
+            <p>Cuando estás componiendo en una tonalidad Mayor (ej. Do Mayor), puedes pedir prestados acordes de la escala de <strong>Do menor natural</strong> para oscurecer momentáneamente el paisaje emocional:</p>
+            <ul>
+                <li><strong>El Subdominante Menor (<code>ivm</code> — Fa menor en Do Mayor):</strong> Usar la secuencia <code>F → Fm → C</code> produce una nostalgia instantánea.</li>
+                <li><strong>Cadencia Épica de Cine/Rock (<code>bVI → bVII → I</code>):</strong> En Do Mayor, tocar <code>Ab → Bb → C</code>.</li>
+            </ul>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 11: DECODIFICADOR DE GÉNEROS MUSICALES
+        ================================================================== -->
+        <section id="mod11" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl5">Nivel 5 · Estilística Aplicada</span>
+                <h2 class="module-title">Módulo 11: Decodificador de Géneros y Estilos Musicales</h2>
+                <p class="module-subtitle">Cómo adaptar la armonía, el ritmo y la función de cada instrumento según el género que quieras componer.</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🎸 Rock / Pop-Rock / Indie</h4>
+                    <p><strong>Armonía:</strong> Tríadas abiertas, Power Chords, modo Mixolidio (<code>I - bVII - IV</code>) y Eólico.<br>
+                    <strong>Sección Rítmica:</strong> Bajo en corcheas bloqueado con el bombo; caja contundente en 2 y 4.<br>
+                    <strong>Guitarras y Piano:</strong> Guitarra rítmica crunch haciendo acordes de quinta o abiertos + segunda guitarra haciendo riff o arpegios en trastes altos; piano marcando negras o acordes largos.</p>
+                </div>
+
+                <div class="card">
+                    <h4>🎹 Pop Moderno / Synth-Pop / Urbano</h4>
+                    <p><strong>Armonía:</strong> Bucles hipnóticos de 4 acordes con colores <code>add9</code>, <code>sus2</code> y <code>m7</code>.<br>
+                    <strong>Sección Rítmica:</strong> Espacio extremo; el bajo es corto y sincopado; uso frecuente del patrón rítmico <code>3+3+2</code>.<br>
+                    <strong>Guitarras y Piano:</strong> Arpegios minimalistas o rasgueos muteados muy cortos ("plucks") que dejan el 70% del espacio a la producción vocal.</p>
+                </div>
+
+                <div class="card">
+                    <h4>🕺 Funk / Soul / R&amp;B / Neo-Soul</h4>
+                    <p><strong>Armonía:</strong> Cuatríadas y extensiones obligatorias (<code>m9</code>, <code>13</code>, <code>Maj9</code>), modo Dórico y cromatismos.<br>
+                    <strong>Sección Rítmica:</strong> Subdivisión de 16 semicorcheas con notas fantasma; el bajo lidera melódicamente.<br>
+                    <strong>Guitarras y Piano:</strong> Teclado Rhodes haciendo colchones ricos; guitarra eléctrica limpia tocando fragmentos de 2 o 3 cuerdas agudas en contratiempos.</p>
+                </div>
+
+                <div class="card">
+                    <h4>🎶 Balada Cinematográfica / Cantautor</h4>
+                    <p><strong>Armonía:</strong> Uso expresivo de inversiones con bajo descendente por grados (ej. <code>C → G/B → Am7 → C/G → F → Fm → C</code>).<br>
+                    <strong>Arreglo Progresivo:</strong> Empieza con un solo instrumento (piano arpegiado o guitarra acústica fingerpicking), añade el bajo y un pulso suave en la Estrofa 2, y despliega toda la banda en el segundo Estribillo.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 12: TALLER MAESTRO — CANCIÓN COMPLETA PASO A PASO (CON REPRODUCTOR)
+        ================================================================== -->
+        <section id="mod12" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl5">Masterclass Práctica Interactiva</span>
+                <h2 class="module-title">Módulo 12: Taller Maestro — Construcción y Reproducción de un Arreglo Completo</h2>
+                <p class="module-subtitle">Analiza y escucha cómo se ensamblan Voz/Lead, Batería, Bajo Eléctrico, Piano, Guitarra Acústica y Guitarra Eléctrica en una canción real.</p>
+            </div>
+
+            <p>Vamos a construir el estribillo de una canción completa titulada <strong>"Horizonte de Cristal"</strong> en la tonalidad de <strong>La menor / Do Mayor a 105 BPM</strong>. La progresión utiliza un giro profesional en el cuarto compás: <strong><code>Am7 | Fmaj7 | C | G → E7/G#</code></strong> (un dominante secundario en primera inversión que empuja cromáticamente desde Sol → Sol# → La).</p>
+
+            <!-- REPRODUCTOR MULTIPATRÓN DEL ARREGLO COMPLETO -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.15rem;">Reproductor Multipista del Arreglo Completo ("Horizonte de Cristal")</strong>
+                        <p style="font-size:0.84rem; color:var(--text-muted); margin:0;">Escucha a toda la banda tocando simultáneamente la partitura inferior y activa/desactiva instrumentos para analizar su papel.</p>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="btn btn-primary" id="playFullBandBtn" onclick="toggleFullBandArrangement()">▶ Escuchar Arreglo Completo en Vivo</button>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:18px; flex-wrap:wrap; margin-bottom:14px; padding:12px; background:rgba(0,0,0,0.3); border-radius:8px;">
+                    <label style="cursor:pointer;"><input type="checkbox" id="muteMelody" checked=""> 🎤 Melodía Principal</label>
+                    <label style="cursor:pointer;"><input type="checkbox" id="mutePiano" checked=""> 🎹 Piano (Registro Medio)</label>
+                    <label style="cursor:pointer;"><input type="checkbox" id="muteElecGtr" checked=""> 🎸 Guitarra Eléctrica (Tríadas/Arpegio Agudo)</label>
+                    <label style="cursor:pointer;"><input type="checkbox" id="muteBass" checked=""> 🎸 Bajo Eléctrico (Conducción Cromática)</label>
+                    <label style="cursor:pointer;"><input type="checkbox" id="muteDrums" checked=""> 🥁 Batería Completa</label>
+                </div>
+
+                <div id="bandNowPlayingBar" style="padding:10px 14px; background:#090d16; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-mono); font-size:0.88rem; color:var(--accent-gold);">
+                    Estado: Listo para reproducir — Compás actual: [En espera]
+                </div>
+            </div>
+
+            <h3>Partitura Multicapa Detallada del Arreglo (Compases 1 al 4)</h3>
+            <div class="tab-block"><span class="tab-label">PARTITURA DE BANDA COMPLETA — Tonalidad: Am / C | Tempo: 105 BPM | Compás: 4/4</span>
+=======================================================================================================================
+COMPÁS / ACORDE     | COMPÁS 1: [ Am7 ]          | COMPÁS 2: [ Fmaj7 ]        | COMPÁS 3: [ C ]            | COMPÁS 4: [ G ]  -&gt; [ E7/G# ]
+CONTEO (Corcheas)   | 1  +  2  +  3  +  4  +     | 1  +  2  +  3  +  4  +     | 1  +  2  +  3  +  4  +     | 1  +  2  +  3  +  4  +
+=======================================================================================================================
+
+1. MELODÍA VOCAL    | .  E5 .  D5 .  C5 .  .     | C5 .  A4 .(ligado)...   G4 | G4 .  E5 .  D5 .  C5 .     | B4 ---(nota larga)--  B4 .
+   (Octava 4-5)     |    "Siem-pre vuel-vo"      | "a   ver     tu       luz" | "cuan-do ca-e  el sol"     | "hoy..."             (tensión)
+
+-----------------------------------------------------------------------------------------------------------------------
+2. BATERÍA          |
+   Plato Crash/Ride | C  R  R  R  R  R  R  R     | R  R  R  R  R  R  R  R     | R  R  R  R  R  R  R  R     | R  R  R  R  C  R  R  R
+   Caja (Snare)     | .  .  S  .  .  .  S  .     | .  .  S  .  .  (s)S  .     | .  .  S  .  .  .  S  .     | .  .  S  .  .  .  S  S(fill)
+   Bombo (Kick)     | K  .  .  K  .  K  .  .     | K  .  .  K  .  K  .  K     | K  .  .  K  .  K  .  .     | K  .  K  .  K  .  K  .
+
+-----------------------------------------------------------------------------------------------------------------------
+3. BAJO ELÉCTRICO   | (Bloqueado con el Bombo + línea cromática G -&gt; G# -&gt; A en el compás 4)
+   G|---------------|----------------------------|----------------------------|----------------------------|----------------------------|
+   D|---------------|----------------5-----7-----|----------------------------|----------------5-----------|----------------------------|
+   A|---------------|-0--------0--------0--------|----------------3-----0-----|-3--------3--------3--2-----|----------------------------|
+   E|---------------|----------------------------|-1--------1-----------------|----------------------------|-3-----3-----4-----4--------|
+   Notas tocadas    : La1     La1   Sol2  La2    | Fa1     Fa1   Do2   La1    | Do2     Do2   Sol2  Do2 Si1| Sol1  Sol1  Sol#1 Sol#1 (-&gt;La)
+
+-----------------------------------------------------------------------------------------------------------------------
+4. PIANO ACÚSTICO   | (Registro Medio Oct 3-4: Conducción de voces manteniendo Do5 y Mi5 como notas comunes en los 3 primeros compases)
+   Mano Derecha     | [G4 - C5 - E5] (redonda)   | [A4 - C5 - E5] (redonda)   | [G4 - C5 - E5] (redonda)   | [G4-B4-D5] -&gt; [G#4-B4-D5-E5]
+   Mano Izquierda   | A2 (blanca) -&gt; A3 (blanca) | F2 (blanca) -&gt; F3 (blanca) | C3 (redonda suave)         | G2 (blanca)-&gt; G#2 (blanca)
+
+-----------------------------------------------------------------------------------------------------------------------
+5. GUITARRA ACÚSTICA| (Rasgueo rítmico brillante en cuerdas abiertas aportando aire y percusión)
+   Acordes abiertos : | Am7 (x02010)             | Fmaj7 (xx3210)             | Cadd9 (x32030)             | G6 (320000) -&gt; E7 (020100) |
+
+-----------------------------------------------------------------------------------------------------------------------
+6. GUITARRA ELÉCT.  | (Arpegio cristalino en trastes 10 al 14 de las 3 primeras cuerdas - Cero conflicto con el piano)
+   e|---------------|-------12------------12-----|-------12------------12-----|-------12------------12-----|-------10------------12-----|
+   B|---------------|----13----13------13----13--|----13----13------13----13--|----13----13------13----13--|----12----12------12----12--|
+   G|---------------|-14------------14-----------|-14------------14-----------|-12------------12-----------|-12------------13-----------|</div>
+
+            <div class="callout exercise">
+                <div class="callout-title">🎯 Ejercicio Práctico con el Reproductor Superior</div>
+                <p>1. Dale a <strong>"▶ Escuchar Arreglo Completo en Vivo"</strong> arriba.<br>
+                2. Desmarca las casillas de <em>Melodía, Piano y Guitarra Eléctrica</em> para dejar sonando <strong>solo el Bajo y la Batería</strong>. Escucha cómo el bajo sube medio tono (de Sol a Sol#) a mitad del compás 4.<br>
+                3. Ahora apaga el Bajo y la Batería y deja solo <strong>Piano + Guitarra Eléctrica</strong>: comprueba cómo el piano habita el registro medio mientras la guitarra eléctrica brilla una octava por encima sin estorbarse jamás.</p>
+            </div>
+        </section>
+
+
+    <!-- =================================================================
+         MOTOR JAVASCRIPT ROBUSTO: SÍNTESIS DE AUDIO HD + SECUENCIADORES
+    ================================================================== -->
+    <!-- =================================================================
+         REEMPLAZA DESDE <script> HASTA </script> AL FINAL DE TU ARCHIVO
+    ================================================================== -->
+    <!-- =================================================================
+             MÓDULO 13: ARQUITECTURA PROFUNDA DE PROGRESIONES, CAMBIOS MODALES Y MODULACIÓN
+        ================================================================== -->
+        <section id="mod13" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · Arquitectura de Progresiones</span>
+                <h2 class="module-title">Módulo 13: Psicología de las Progresiones, Cambios Modales y Modulación</h2>
+                <p class="module-subtitle">Por qué ciertas secuencias de acordes hipnotizan al cerebro, cómo tomar colores prestados de otros modos y cómo cambiar de tonalidad en medio de una canción.</p>
+            </div>
+
+            <h3>13.1 Cómo Funciona una Progresión por Dentro: Ciclos de Tensión y Resolución</h3>
+            <p>Una progresión de acordes no es una lista aleatoria; es un <strong>sistema hidráulico de tensión</strong>. El oído humano evalúa constantemente dos cosas: <strong>1) ¿Estamos en casa (Tónica) o lejos de casa?</strong> y <strong>2) ¿A qué distancia se movió la nota del bajo (Movimiento de Fundamentales)?</strong></p>
+            <ul>
+                <li><strong>Movimiento por Quintas Descendentes o Cuartas Ascendentes (El más fuerte de la naturaleza):</strong> Ir de <code>Dm → G → C</code> (<code>ii → V → I</code>) o <code>Am → Dm → G → C</code> (<code>vi → ii → V → I</code>) produce una sensación de inevitabilidad gravitacional porque los armónicos del acorde anterior contienen la tónica del siguiente.</li>
+                <li><strong>Movimiento por Segundas (Paso Contiguo):</strong> Ir de <code>F → G</code> (<code>IV → V</code>) o de <code>F → G → Am</code> (<code>bVI → bVII → im</code> en menor) genera una rampa ascendente de energía heroica.</li>
+                <li><strong>Movimiento por Terceras (Transformación Suave):</strong> Ir de <code>C → Am</code> (<code>I → vi</code>) o <code>C → Em</code> (<code>I → iii</code>) mantiene <strong>2 de las 3 notas idénticas</strong> y cambia solo una nota. Produce la sensación de que la luz del cuarto cambia lentamente sin que el suelo se mueva.</li>
+            </ul>
+
+            <h3>13.2 Las 6 Progresiones Arquetípicas que Dominan la Música Mundial</h3>
+            <p>Haz clic en cada botón para escuchar cómo suena cada progresión interpretada por el Piano Acústico, la Guitarra y el Bajo de nuestro motor:</p>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Arquetipo</th>
+                            <th>Fórmula en Grados</th>
+                            <th>Ejemplo en Do Mayor / La menor</th>
+                            <th>Por qué funciona psicológicamente</th>
+                            <th>Audición en Vivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. El Himno Luminoso (Pop/Rock)</strong></td>
+                            <td><code>I – V – vi – IV</code></td>
+                            <td><code>C – G – Am – F</code></td>
+                            <td>Empieza con autoridad en casa (I), viaja a la emoción menor (vi) y se abre en el IV.</td>
+                            <td><button class="btn-audio" data-audio="prog:I-V-vi-IV">🔊 Escuchar</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. La Ruta Emocional / Épica</strong></td>
+                            <td><code>vi – IV – I – V</code></td>
+                            <td><code>Am – F – C – G</code></td>
+                            <td>Usa los mismos 4 acordes pero arranca en el relativo menor (vi), dando vulnerabilidad inmediata.</td>
+                            <td><button class="btn-audio" data-audio="prog:vi-IV-I-V">🔊 Escuchar</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Cadencia Andaluza / Latina / Folklórica</strong></td>
+                            <td><code>im – bVII – bVI – V7</code></td>
+                            <td><code>Am – G – F – E7</code></td>
+                            <td>El bajo desciende implacablemente paso a paso (La-Sol-Fa-Mi) hasta el dominante E7.</td>
+                            <td><button class="btn-audio" data-audio="prog:andaluz">🔊 Escuchar</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. "Royal Road" (Camino Real Japonés / Neo-Soul)</strong></td>
+                            <td><code>IVmaj7 – V7 – iiim7 – vim7</code></td>
+                            <td><code>Fmaj7 – G7 – Em7 – Am7</code></td>
+                            <td>Nunca pisa el acorde I (Do); vive en una nostalgia suspendida y sofisticada perpetua.</td>
+                            <td><button class="btn-audio" data-audio="prog:royal">🔊 Escuchar</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>5. El Ciclo Huayno / Andino Tradicional</strong></td>
+                            <td><code>bIII – bVII – im – V7 – im</code></td>
+                            <td><code>F – C – G – E7 – Am</code></td>
+                            <td>Salta alegremente por el relativo Mayor (Do) antes de aterrizar con nostalgia en el hogar menor (La menor).</td>
+                            <td><button class="btn-audio" data-audio="prog:andino">🔊 Escuchar (Con Quena)</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>6. Desgarro Cinematográfico (Intercambio Modal)</strong></td>
+                            <td><code>I – V/7 – vi – ivm6</code></td>
+                            <td><code>C – G/B – Am – Fm6</code></td>
+                            <td>Sustituye el Fa Mayor esperado por un <strong>Fa menor (ivm)</strong> prestado de Do menor.</td>
+                            <td><button class="btn-audio" data-audio="prog:modal-ivm">🔊 Escuchar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>13.3 Cambios Modales (Intercambio Modal) paso a paso</h3>
+            <p>Un <strong>Cambio Modal (o Intercambio Modal)</strong> ocurre cuando mantienes el mismo centro gravitacional (por ejemplo, tu tónica sigue siendo <strong>Do</strong>), pero durante uno o dos compases tomas prestados acordes de los modos paralelos de Do (<em>Do Eólico, Do Dórico, Do Lidio o Do Mixolidio</em>):</p>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>Préstamo Eólico (Oscurecer)</h4>
+                    <p>Estás en Do Mayor y pides prestados de <strong>Do menor</strong> los acordes <code>Fm (iv)</code>, <code>Ab (bVI)</code> o <code>Bb (bVII)</code>.<br>
+                    <strong>Cuándo usarlo:</strong> Al final del estribillo o en la salida del puente para crear nostalgia profunda o grandeza épica.</p>
+                    <button class="btn-audio" data-audio="prog:eolic-borrow">🔊 Oír C → F → Fm → C</button>
+                </div>
+                <div class="card">
+                    <h4>Préstamo Dórico (Iluminar un tono menor)</h4>
+                    <p>Estás en <strong>La menor (Am)</strong>, donde el cuarto acorde normal es <code>Dm (Re menor)</code>. Lo cambias por <strong><code>D7 (Re Mayor 7)</code></strong> subiendo el Fa a Fa#.<br>
+                    <strong>Cuándo usarlo:</strong> Para que una canción en tono menor deje de sonar triste y pase a sonar misteriosa, esperanzadora o con groove.</p>
+                    <button class="btn-audio" data-audio="prog:dorian-borrow">🔊 Oír Am7 → Dm7 vs Am7 → D7</button>
+                </div>
+                <div class="card">
+                    <h4>Tercera de Picarda (De la sombra a la luz)</h4>
+                    <p>Toda tu canción o estrofa está en <strong>La menor (Am)</strong>, y en el último acorde de cierre, en lugar de tocar <code>Am</code>, aterrizas en un luminoso <strong><code>A Mayor (La Mayor)</code></strong>.</p>
+                    <button class="btn-audio" data-audio="prog:picardy">🔊 Oír Dm → E7 → A Mayor</button>
+                </div>
+            </div>
+
+            <h3>13.4 Las 4 Técnicas de Modulación (Cambiar de Tonalidad a Mitad de la Canción)</h3>
+            <p>Mientras que el cambio modal toma prestado un acorde y regresa a casa, la <strong>Modulación</strong> consiste en mudarse a una nueva tonalidad ("cambiar de casa"). Así lo hacen los profesionales:</p>
+            <ol>
+                <li><strong>Modulación por Acorde Pivote (La más elegante e invisible):</strong> Buscas un acorde que exista simultáneamente en la tonalidad vieja y en la tonalidad nueva. Por ejemplo, para pasar de <strong>Do Mayor (C)</strong> a <strong>Sol Mayor (G)</strong>, usas el acorde <code>Am</code> o <code>Em</code> (que pertenece a ambas) seguido inmediatamente de <code>D7 (V7 de Sol) → G</code>. <button class="btn-audio" data-audio="mod:pivot">🔊 Escuchar Modulación Pivote (Do → Sol)</button></li>
+                <li><strong>Modulación por Dominante Directo:</strong> Estás en Do Mayor y, sin previo aviso, tocas el acorde <code>B7 (Si7)</code>, que actúa como un portal magnético que te lanza a la nueva tonalidad de <strong>Mi Mayor o Mi menor</strong>.</li>
+                <li><strong>Modulación de Tono Directo Ascendente (+1 o +2 semitonos en el Estribillo Final):</strong> Conocida en producción como <em>"Lift"</em>. Terminas el penúltimo estribillo en <code>Do Mayor</code>, introduces medio compás con el dominante de la nueva tonalidad (<code>Ab7</code> o <code>A7</code>) y despegas el último estribillo en <strong>Reb Mayor o Re Mayor</strong> para elevar la adrenalina al máximo. <button class="btn-audio" data-audio="mod:lift">🔊 Escuchar Subida de Tono (+1 Tono: Do → Re)</button></li>
+                <li><strong>Modulación Relativa (Estrofa Menor → Estribillo Mayor):</strong> Hacer toda la estrofa centrada en <code>La menor (Am - Dm - E7 - Am)</code> y en el pre-estribillo cambiar el <code>E7</code> por un <code>G7</code> que desemboca en un estribillo radiante en <strong>Do Mayor</strong>.</li>
+            </ol>
+
+            <!-- LABORATORIO INTERACTIVO: CONSTRUCTOR DE PROGRESIONES DE 4 COMPASES -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.12rem;">Laboratorio Interactivo: Diseñador de Progresiones y Cambios Modales</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Elige qué acorde suena en cada uno de los 4 compases (incluyendo préstamos modales y dominantes secundarios) y escúchalo con Piano, Guitarra y Bajo.</p>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="btn btn-primary" id="playCustomProgBtn" data-audio="customprog:play">▶ Reproducir Mi Progresión</button>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                    <div class="card" style="padding:14px;">
+                        <label style="font-size:0.78rem; color:var(--accent-cyan); font-weight:bold;">COMPÁS 1</label>
+                        <select id="progSlot1" style="width:100%; margin-top:6px;">
+                            <option value="C" selected>I — C (Do Mayor)</option>
+                            <option value="Am">vi — Am (La menor)</option>
+                            <option value="Fmaj7">IV — Fmaj7 (Fa Maj7)</option>
+                            <option value="Dm7">ii — Dm7 (Re menor 7)</option>
+                        </select>
+                    </div>
+                    <div class="card" style="padding:14px;">
+                        <label style="font-size:0.78rem; color:var(--accent-cyan); font-weight:bold;">COMPÁS 2</label>
+                        <select id="progSlot2" style="width:100%; margin-top:6px;">
+                            <option value="G">V — G (Sol Mayor)</option>
+                            <option value="E7" selected>V7/vi — E7 (Dom. Secundario)</option>
+                            <option value="Fmaj7">IV — Fmaj7 (Fa Maj7)</option>
+                            <option value="C7">V7/IV — C7 (Empuje a Fa)</option>
+                            <option value="Ab">bVI — Ab (Préstamo Épico)</option>
+                        </select>
+                    </div>
+                    <div class="card" style="padding:14px;">
+                        <label style="font-size:0.78rem; color:var(--accent-cyan); font-weight:bold;">COMPÁS 3</label>
+                        <select id="progSlot3" style="width:100%; margin-top:6px;">
+                            <option value="Am" selected>vi — Am (La menor)</option>
+                            <option value="Fmaj7">IV — Fmaj7 (Fa Maj7)</option>
+                            <option value="Dm7">ii — Dm7 (Re menor 7)</option>
+                            <option value="Bb">bVII — Bb (Préstamo Modal)</option>
+                            <option value="D7">II7 — D7 (Color Lidio/Dórico)</option>
+                        </select>
+                    </div>
+                    <div class="card" style="padding:14px;">
+                        <label style="font-size:0.78rem; color:var(--accent-cyan); font-weight:bold;">COMPÁS 4</label>
+                        <select id="progSlot4" style="width:100%; margin-top:6px;">
+                            <option value="Fm6" selected>ivm6 — Fm6 (Subdom. Menor Nostálgico)</option>
+                            <option value="G">V — G (Dominante Clásico)</option>
+                            <option value="E7">V7/vi — E7 (Hacia La menor)</option>
+                            <option value="Db7">bII7 — Db7 (Sustitución Tritonal)</option>
+                            <option value="C">I — C (Resolución en Casa)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="customProgStatus" style="margin-top:12px; font-size:0.85rem; color:var(--accent-gold);">
+                    Configuración actual lista: C → E7 (Dominante secundario) → Am → Fm6 (Intercambio modal). ¡Pulsa Reproducir!
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 14: VIENTOS EN LA COMPOSICIÓN — MAESTRÍA EN LA QUENA Y VIENTOS ANDINOS
+        ================================================================== -->
+        <section id="mod14" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · Instrumentación de Vientos y Folklore Fusión</span>
+                <h2 class="module-title">Módulo 14: El Alma del Aire — Composición y Arreglos para Quena, Vientos Andinos y Metales</h2>
+                <p class="module-subtitle">Cómo escribir y arreglar para la Quena (registro, afinación, articulación, escalas y fusión con guitarra, bajo, piano y batería).</p>
+            </div>
+
+            <p>Los instrumentos de viento aportan algo que ni el piano ni la guitarra poseen de forma natural: <strong>la respiración humana directa y la capacidad de mantener o crecer el volumen de una nota después de haberla atacado</strong>. Dentro de ellos, la <strong>Quena</strong> es uno de los instrumentos melódicos más expresivos del mundo, capaz de brillar tanto en la música andina tradicional (Huayno, Carnaval, Bambuco, Sanjuanito, Tinku) como en el Rock Fusión, Jazz Contemporáneo, Pop Orgánico y Bandas Sonoras Cinematográficas.</p>
+
+            <h3>14.1 Anatomía, Afinación y Registro Real de la Quena</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Afinación Estándar (En Sol Mayor / Mi menor)</h4>
+                    <p>La Quena estándar de concierto (de unos 38 cm, construida en caña, bambú o maderas nobles como jacarandá o ébano) tiene 6 agujeros frontales y 1 trasero para el pulgar. Cuando tapas todos los agujeros, su nota más grave es <strong><code>Sol4 (G4 = 392 Hz)</code></strong>.</p>
+                    <p>Al destapar los agujeros uno por uno de abajo hacia arriba, produce de forma natural la escala de <strong>Sol Mayor (<code>G - A - B - C - D - E - F#</code>)</strong> y su relativa <strong>Mi menor (<code>E - F# - G - A - B - C - D</code>)</strong>.</p>
+                    <button class="btn-audio" data-audio="quena:scale">🔊 Escuchar Escala y Melodía en Quena Real (Modelado de Soplo)</button>
+                </div>
+
+                <div class="card">
+                    <h4>Las 3 Octavas de la Quena y Cómo Suena Cada Una</h4>
+                    <ul>
+                        <li><strong>1ª Octava (<code>G4 a F#5</code> — Grave):</strong> Sonido cálido, terroso, íntimo y lleno de aire ("madera pura"). Necesita espacio en el arreglo para no ser tapada por la guitarra o el piano.</li>
+                        <li><strong>2ª Octava (<code>G5 a F#6</code> — Media / Brillante):</strong> Se logra soplando con mayor presión de labio (octavación). Es el registro rey para melodías principales y estribillos: corta cualquier mezcla de banda completa sin esfuerzo.</li>
+                        <li><strong>3ª Octava (<code>G6 a D7</code> — Agudísima):</strong> Usa posiciones cruzadas; es penetrante y épica, ideal para clímax dramáticos (úsala con moderación).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>14.2 Técnicas Expresivas de la Quena que Debes Conocer al Componer</h3>
+            <p>Si escribes una melodía para Quena como si fuera un teclado cuadrado, perderás el 80% de su magia. Un buen compositor aprovecha su embocadura libre (el <strong>bisel o escotadura en U/V</strong> donde choca el filo de aire):</p>
+            <ul>
+                <li><strong>Articulación de Lengua (<em>Tuku / Teke</em>):</strong> El quenista golpea el aire con las sílabas <code>Tu</code> (ataque firme), <code>Du</code> (ataque dulce) o <code>Tu-Ku / Te-Ke</code> (doble golpe rápido de lengua para semicorcheas ágiles).</li>
+                <li><strong>Glissando y Arrastre (Bending de Dedo):</strong> Al deslizar lentamente el dedo para destapar un agujero o inclinar la quena contra el mentón, la nota sube o baja de forma continua ("llorando" la nota). Es el sello emocional del instrumento.</li>
+                <li><strong>Mordentes y Apoyaturas Rápidas (Chicoteo):</strong> Antes de caer en una nota larga de la escala pentatónica, batir rápidamente el dedo superior.</li>
+                <li><strong>Notas Cromáticas (Medios Agujeros y Horquillas):</strong> Aunque la quena estándar está en Sol Mayor / Mi menor, un quenista profesional puede tocar en <code>La menor</code> (haciendo <code>Sol#</code> o <code>Fa natural</code>), <code>Re menor</code> o <code>Do Mayor</code> destapando medio agujero, aunque las tonalidades donde más resuena y proyecta son <strong>Mi menor (Em), Sol Mayor (G), La menor (Am) y Re Mayor (D)</strong>.</li>
+            </ul>
+
+            <div class="tab-block"><span class="tab-label">Mapa de Digitación de la Quena Estándar (Agujero ● = Tapado | ○ = Destapado | ◐ = Medio tapado)</span>
+NOTA MUSICAL :   G4 (Sol)    A4 (La)     B4 (Si)     C5 (Do)     D5 (Re)     E5 (Mi)     F5 (Fa nat)   F#5 (Fa#)    G5 (Sol Oct.2)
+Pulgar Atrás :      ●           ●           ●           ●           ●           ●            ●            ○            ● (o destapado)
+Mano Izq (1) :      ●           ●           ●           ●           ●           ○            ○            ●            ●
+Mano Izq (2) :      ●           ●           ●           ●           ○           ○            ●            ○            ●
+Mano Izq (3) :      ●           ●           ●           ○           ○           ○            ○            ○            ●
+Mano Der (4) :      ●           ●           ○           ○           ○           ○            ○            ○            ●
+Mano Der (5) :      ●           ○           ○           ○           ○           ○            ○            ○            ●
+Mano Der (6) :      ●           ○           ○           ○           ○           ○            ○            ○            ●</div>
+
+            <h3>14.3 Cómo Integrar la Quena con Guitarra, Bajo, Piano y Batería (Arreglo de Fusión)</h3>
+            <p>Cuando combinas una Quena (y su hermana complementaria, la <strong>Zampoña / Siku</strong>) con una banda moderna de Bajo Eléctrico, Batería, Guitarra Acústica/Eléctrica y Piano, aplica estas reglas de oro de arreglo:</p>
+
+            <div class="tab-block"><span class="tab-label">Arreglo Fusión Andino-Contemporáneo en Mi menor (Em): "Viento de la Cordillera" (Escúchalo abajo)</span>
+COMPÁS (2/4 o 4/4)  | [ Cmaj7 (VI) ]              | [ D7 (VII) ]                | [ G (III) ] -> [ B7 (V7) ]  | [ Em (i) ]
+--------------------+-----------------------------+-----------------------------+-----------------------------+-----------------------------
+1. QUENA PRINCIPAL  | G5 -- A5 - B5 -- (vibrato)  | A5 -- G5 - F#5 - E5 -       | D5 -- G5 - F#5 -- (B4)      | E5 ------- (glissando/aire)
+   (Registro Oct 5) | (Entra brillando sobre C)   | (Desciende por escala)      | (Dibuja el cambio G -> B7)  | (Reposo emotivo en Tónica)
+--------------------+-----------------------------+-----------------------------+-----------------------------+-----------------------------
+2. GUITARRA ACÚST.  | Rasgueo sincopado brillante (o arpegio estilo Charango en cuerdas agudas) dejando libre la zona de 600Hz-1.5kHz.
+--------------------+-----------------------------+-----------------------------+-----------------------------+-----------------------------
+3. PIANO            | Acordes suaves en Octava 3-4 ([E4-G4-B4] -> [D4-F#4-A4]) sin tocar melodía aguda para no chocar con el soplo de la Quena.
+--------------------+-----------------------------+-----------------------------+-----------------------------+-----------------------------
+4. BAJO + BATERÍA   | Patrón de Huayno/Fusión: El Bombo y el Bajo marcan [Corchea - Dos Semicorcheas] o [Negra - Corchea - Corchea] dando tierra firme.</div>
+
+            <div style="margin: 18px 0;">
+                <button class="btn btn-primary" data-audio="quena:fusion">▶ Escuchar Arreglo Fusión Completo: Quena + Guitarra + Piano + Bajo + Percusión</button>
+            </div>
+
+            <div class="callout pro">
+                <div class="callout-title">🔥 Secreto de Arreglista: El Diálogo Voz – Quena y el Dúo de Quenas en 3ªs</div>
+                <p>1. <strong>Nunca hagas que la Quena toque una melodía agitada al mismo tiempo que el cantante está cantando la letra principal</strong>, porque ambos habitan el mismo rango de presencia (800 Hz – 3.5 kHz) y se anulan mutuamente. Usa la Quena en la <strong>Introducción</strong>, como <strong>respuesta en los huecos donde el cantante respira</strong>, y en el <strong>Interludio instrumental</strong>.<br>
+                2. <strong>Dúo de Quenas en Terceras Paralelas:</strong> Cuando quieras que una melodía de Quena suene gigantesca y emotiva, escribe una <strong>segunda Quena tocando exactamente el mismo ritmo pero una 3ª diatónica más abajo</strong> (por ejemplo, si la Quena 1 toca <code>Si - La - Sol</code> en Mi menor, la Quena 2 toca <code>Sol - Fa# - Mi</code>).</p>
+                <button class="btn-audio" data-audio="quena:duet">🔊 Escuchar Dúo de Quenas Armonizadas en Terceras</button>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 15: COMPOSICIÓN DE CANCIONES, PROSODIA, ESCRITURA DE LETRAS Y EJERCICIOS
+        ================================================================== -->
+        <section id="mod15" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl5">Nivel 5 · Songwriting y Lírica</span>
+                <h2 class="module-title">Módulo 15: El Arte de Escribir Canciones — Prosodia, Escritura de Letras y Ejercicios Creativos</h2>
+                <p class="module-subtitle">Cómo unir música y palabras sin que suenen forzadas, estructurar la historia emocional y superar el bloqueo de la hoja en blanco.</p>
+            </div>
+
+            <h3>15.1 La Ley de la Prosodia: Por qué algunas letras suenan "incómodas" al cantarlas</h3>
+            <p>En español, cada palabra tiene una <strong>sílaba tónica</strong> (la sílaba que lleva la fuerza de la voz, tenga tilde gráfica o no: <em>ca-<strong>mi</strong>-no, co-ra-<strong>zón</strong>, <strong>lá</strong>-gri-ma</em>). A la vez, la música tiene <strong>pulsos fuertes</strong> (los tiempos <strong>1 y 3</strong> del compás de 4/4).</p>
+            <p><strong>La Regla de Oro de la Prosodia Musical:</strong> La sílaba tónica de las palabras importantes debe caer <strong>exactamente sobre el tiempo fuerte del compás (1 o 3) o sobre la nota más larga/aguda de la frase</strong>. Si pones una palabra grave como <em>"cielo"</em> haciendo caer el tiempo 1 fuerte en la última sílaba (<em>"cie-<strong>LÓ</strong>"</em>), deformas el idioma y arruinas la emoción.</p>
+
+            <div class="grid-3">
+                <div class="card">
+                    <h4>1. Finales Agudos (Oxítonos)</h4>
+                    <p>Terminan en sílaba tónica (<em>a-<strong>mor</strong>, ver-<strong>dad</strong>, sol, cristal</em>).<br>
+                    <strong>Efecto musical:</strong> Caen como un golpe seco y rotundo en el pulso fuerte. Ideales para terminar frases de <strong>Estribillos heroicos o afirmativos</strong>.</p>
+                </div>
+                <div class="card">
+                    <h4>2. Finales Graves / Llanos</h4>
+                    <p>El acento está en la penúltima sílaba (<em>vien-to, no-che, ca-lle</em>).<br>
+                    <strong>Efecto musical:</strong> La penúltima sílaba cae en el pulso fuerte y la última sílaba se desliza suavemente. Dan fluidez natural y conversacional en <strong>Estrofas y Baladas</strong>.</p>
+                </div>
+                <div class="card">
+                    <h4>3. Finales Esdrújulos</h4>
+                    <p>El acento está en la antepenúltima sílaba (<em>mú-si-ca, vérti-go, pá-ja-ros</em>).<br>
+                    <strong>Efecto musical:</strong> Crean un rebote rítmico de tres sílabas fascinante (muy usado por grandes letristas como <em>Jorge Drexler, Gustavo Cerati, Joaquín Sabina o Silvio Rodríguez</em>).</p>
+                </div>
+            </div>
+
+            <h3>15.2 Acústica de las Vocales en las Notas Agudas</h3>
+            <p>Cuando escribas la nota más alta del estribillo (el clímax vocal), cuida qué vocal pones en esa sílaba:</p>
+            <ul>
+                <li><strong>Vocales Abiertas (<code>A</code>, <code>O</code>, <code>E</code>):</strong> Abren la garganta y proyectan potencia máxima. Palabras como <em>"m<strong>a</strong>r", "s<strong>o</strong>l", "v<strong>e</strong>r", "libert<strong>a</strong>d"</em> hacen que el cantante suene gigante en el registro agudo.</li>
+                <li><strong>Vocales Cerradas (<code>I</code>, <code>U</code>):</strong> Cierran el tracto vocal. Poner una palabra como <em>"t<strong>ú</strong>"</em> o <em>"m<strong>i</strong>"</em> en la nota más aguda a plena potencia estrangula la voz (salvo que busques un falsete íntimo y vulnerable).</li>
+            </ul>
+
+            <h3>15.3 Arquitectura Narrativa: Qué debe decir cada parte de la Canción</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sección</th>
+                            <th>Función Literaria</th>
+                            <th>Tipo de Lenguaje ("Mostrar vs. Explicar")</th>
+                            <th>Ejemplo Práctico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Estrofa 1 (Verse 1)</strong></td>
+                            <td><strong>El Escenario (Dónde, Cuándo, Detalles físicos)</strong></td>
+                            <td>Sensorial y concreto. No digas "estoy triste"; muestra objetos, horas, lugares, clima.</td>
+                            <td><em>"Son las seis en la estación, el café se enfrió en la mesa..."</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pre-Estribillo</strong></td>
+                            <td><strong>El Conflicto / La Rampa</strong></td>
+                            <td>Frases más cortas y urgentes que cuestionan la situación y preparan la tesis.</td>
+                            <td><em>"Y aunque intento no mirar atrás, el viento vuelve a pronunciar..."</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Estribillo (Chorus)</strong></td>
+                            <td><strong>La Tesis Universal (El Título)</strong></td>
+                            <td>Emocional, directo, fácil de recordar, con vocales abiertas en las notas altas.</td>
+                            <td><em>"Que siempre vuelvo a ver tu luz cuando cae el sol..."</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Estrofa 2 (Verse 2)</strong></td>
+                            <td><strong>El Avance Temporal</strong></td>
+                            <td>Muestra cómo cambió la situación respecto a la Estrofa 1 (nunca repitas la misma idea).</td>
+                            <td><em>"Ya cerraron el andén, quedan huellas en la lluvia..."</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Puente (Bridge)</strong></td>
+                            <td><strong>La Epifanía / Giro de Perspectiva</strong></td>
+                            <td>La revelación o conclusión inesperada que da un nuevo sentido al último estribillo.</td>
+                            <td><em>"Tal vez perderse era la única forma de aprender a caminar."</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>15.4 Taller de 4 Ejercicios Prácticos para Escribir Letras y Canciones</h3>
+
+            <div class="callout exercise">
+                <div class="callout-title">✍️ Ejercicio 1: La Regla de "Prohibido los Conceptos Abstractos" (Mostrar, No Explicar)</div>
+                <p>Escribe una estrofa de 4 versos sobre la nostalgia o la alegría, pero <strong>tienes prohibido usar palabras abstractas</strong> como <em>amor, tristeza, dolor, soledad, felicidad, alma o corazón</em>. En su lugar, estás obligado a mencionar al menos <strong>3 objetos físicos cotidianos</strong> (ej. una llave, una ventana empañada, una guitarra vieja, un semáforo en rojo) y <strong>1 acción física</strong>. Verás cómo tu letra adquiere calidad cinematográfica al instante.</p>
+            </div>
+
+            <div class="callout exercise">
+                <div class="callout-title">🥁 Ejercicio 2: El Mapa de Acentos antes de la Letra ("Melodía en Idioma Inventado")</div>
+                <p>Pon en bucle el <strong>Constructor de Progresiones del Módulo 13</strong> arriba. Improvisa una melodía tarareando sílabas sin sentido y anota en qué tiempos caen tus acentos fuertes (por ejemplo: <code>ta - ta - TÁ --- | ta - TÁ - ta - TÁ ---</code>). Ahora busca palabras en español cuyos acentos naturales coincidan exactamente con ese molde rítmico (el primer molde pide una palabra aguda al final; el segundo pide dos graves o agudas).</p>
+            </div>
+
+            <div class="callout exercise">
+                <div class="callout-title">🔄 Ejercicio 3: El Contraste de Número de Sílabas (Estrofa Densa vs. Estribillo Abierto)</div>
+                <p>Escribe una Estrofa de 4 líneas donde cada verso tenga <strong>10 u 11 sílabas</strong> cantadas en corcheas rápidas en registro medio-grave. Inmediatamente después, escribe un Estribillo donde cada verso tenga <strong>solo 5 o 6 sílabas</strong> cantadas con notas blancas largas en registro agudo. Ese contraste rítmico hará que el estribillo sea inolvidable.</p>
+            </div>
+
+            <div class="callout exercise">
+                <div class="callout-title">🏔️ Ejercicio 4: Composición Instrumental con Quena (Pregunta de Viento, Respuesta de Cuerda)</div>
+                <p>En la tonalidad de <strong>Mi menor (acordes <code>Em – C – G – D</code>)</strong>, compón una frase de 2 compases usando únicamente las 5 notas de la pentatónica menor de Mi (<code>Mi - Sol - La - Si - Re</code>) pensada para la <strong>Quena</strong> (notas largas con aire y vibrato). Deja los compases 3 y 4 en silencio de Quena y escribe ahí un arpegio rápido de respuesta en la <strong>Guitarra Acústica o el Piano</strong>.</p>
             </div>
         </section>
     </main>
 
-    <footer class="bg-light py-4">
-        <div class="container text-center">
-            <p class="mb-0">taskxd</p>
-        </div>
-    </footer>
-
-    <!-- Modals -->
-    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 id="categoryModalLabel" class="modal-title">Gestionar Categorías</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="categoryForm">
-                        <div class="mb-3">
-                            <label for="newCategory" class="form-label">Nueva Categoría (máx. 10 caracteres)</label>
-                            <input type="text" id="newCategory" class="form-control" placeholder="Escribe el nombre" maxlength="10" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Agregar Categoría</button>
-                    </form>
-                    <hr>
-                    <h6 class="mb-3 text-secondary">Categorías Actuales</h6>
-                    <ul id="categoryList" class="list-group"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="taskInfoModal" tabindex="-1" aria-labelledby="taskInfoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 id="taskInfoModalLabel" class="modal-title">Información de la Tarea</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="taskDisplayMode">
-                        <h6 class="fw-bold">Nombre:</h6>
-                        <p id="displayTaskName"></p>
-                        <h6 class="fw-bold">Descripción:</h6>
-                        <p id="displayTaskDescription"></p>
-                        <h6 class="fw-bold">Categoría:</h6>
-                        <p id="displayTaskCategory"></p>
-                        <h6 class="fw-bold">Estado:</h6>
-                        <p id="displayTaskStatus"></p>
-                        <button id="editTaskButton" class="btn btn-primary w-100 mt-3">Editar Tarea</button>
-                    </div>
-
-                    <form id="taskEditForm" class="d-none">
-                        <div class="mb-3">
-                            <label for="editTaskName" class="form-label">Nombre</label>
-                            <input type="text" id="editTaskName" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editTaskDescription" class="form-label">Descripción</label>
-                            <textarea id="editTaskDescription" class="form-control" rows="4"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editTaskCategory" class="form-label">Categoría</label>
-                            <select id="editTaskCategory" class="form-select"></select>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="./src/assets/js/tasks.js"></script>
-    <script type="module" src="./src/assets/js/categories.js"></script>
-    <script type="module" src="./src/assets/js/main.js"></script>
-    <!-- SweetAlert2 Script -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</body>
-</html>
+<script src="motor-musical.js"></script>
+       </body></html>

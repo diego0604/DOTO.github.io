@@ -804,6 +804,234 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* =================================================================
+           DISEÑO RESPONSIVE COMPLETO (TABLETS, MÓVILES Y PANTALLAS PEQUEÑAS)
+        ================================================================== */
+
+        /* 1. Asegurar que ningún contenedor interactivo rompa el ancho en móvil */
+        #main-content, .module-section, .card, .interactive-widget {
+            max-width: 100%;
+        }
+
+        .piano-wrapper,
+        .fretboard-wrapper,
+        .sequencer-grid,
+        .table-container,
+        .tab-block {
+            -webkit-overflow-scrolling: touch;
+            max-width: 100%;
+        }
+
+        /* En pantallas grandes, que el inicio del piano no quede cortado al hacer scroll */
+        @media (max-width: 1150px) {
+            .piano-wrapper {
+                justify-content: flex-start;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
+
+        /* 2. TABLETS Y PORTÁTILES PEQUEÑOS (<= 992px) */
+        @media (max-width: 992px) {
+            body {
+                display: block; /* Evita que el flex horizontal desborde en móviles */
+            }
+
+            #sidebar {
+                transform: translateX(-100%);
+                width: 285px;
+                box-shadow: 8px 0 30px rgba(0, 0, 0, 0.8);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            #audio-banner {
+                left: 0;
+                padding: 10px 16px;
+                gap: 8px;
+            }
+
+            #main-content {
+                margin-left: 0;
+                margin-top: 95px; /* Espacio extra por si el banner de audio ocupa 2 líneas */
+                padding: 25px 4%;
+                width: 100%;
+            }
+
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                bottom: 18px;
+                right: 18px;
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .module-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* 3. TELÉFONOS MÓVILES (<= 768px) */
+        @media (max-width: 768px) {
+            #audio-banner {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 8px 12px;
+            }
+
+            .audio-status-indicator {
+                justify-content: center;
+                font-size: 0.78rem;
+            }
+
+            .audio-controls-top {
+                justify-content: center;
+                width: 100%;
+            }
+
+            #main-content {
+                margin-top: 115px;
+                padding: 20px 14px 80px 14px;
+            }
+
+            .module-header {
+                padding: 18px 15px;
+                margin-bottom: 24px;
+            }
+
+            .module-title {
+                font-size: 1.45rem;
+            }
+
+            .module-subtitle {
+                font-size: 0.92rem;
+            }
+
+            h3 {
+                font-size: 1.22rem;
+                margin-top: 28px;
+            }
+
+            h4 {
+                font-size: 1.05rem;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .callout {
+                padding: 15px;
+                margin: 18px 0;
+            }
+
+            .interactive-widget {
+                padding: 16px 12px;
+                margin: 20px 0;
+            }
+
+            .widget-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .widget-controls {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .widget-controls select,
+            .widget-controls button.btn {
+                width: 100%;
+                text-align: center;
+                padding: 10px 12px;
+            }
+
+            /* Ajuste del Espectro de Frecuencias en pantallas estrechas */
+            .spectrum-bar {
+                padding: 12px 8px;
+            }
+
+            .freq-track {
+                height: 44px;
+            }
+
+            .freq-label {
+                width: 95px;
+                font-size: 0.72rem;
+                padding-left: 6px;
+                background: rgba(20, 26, 36, 0.85);
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            .freq-zone {
+                font-size: 0.62rem;
+                padding: 0 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Tablas y bloques de tablatura más compactos en móvil */
+            th, td {
+                padding: 9px 10px;
+                font-size: 0.82rem;
+            }
+
+            .tab-block {
+                padding: 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 4. MÓVILES PEQUEÑOS (<= 480px) */
+        @media (max-width: 480px) {
+            #main-content {
+                margin-top: 130px;
+                padding: 15px 10px 85px 10px;
+            }
+
+            .module-title {
+                font-size: 1.3rem;
+            }
+
+            .key-white {
+                width: 38px;
+                height: 150px;
+                font-size: 0.68rem;
+            }
+
+            .key-black {
+                width: 26px;
+                height: 92px;
+                margin-left: -13px;
+                margin-right: -13px;
+                font-size: 0.58rem;
+            }
+
+            .piano-keys {
+                height: 150px;
+            }
+
+            .seq-label {
+                width: 90px;
+                font-size: 0.74rem;
+            }
+        }
     </style>
 
 

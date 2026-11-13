@@ -1390,6 +1390,624 @@ document.querySelectorAll('#navList .nav-link').forEach(function(link) {
         }
     });
 });
+
+// =========================================================================
+// EXPANSIÓN 2: CÍRCULO DE QUINTAS SVG, BATERÍA DE 8 CUERPOS Y LABORATORIO DE BAJO
+// =========================================================================
+
+// 1. DATOS Y RENDERIZADO DEL CÍRCULO DE QUINTAS INTERACTIVO
+const COF_KEYS = [
+    { maj: 'C',  min: 'Am',  rootMidi: 60, sig: '0 alteraciones (Todas teclas blancas)', sharps: [] },
+    { maj: 'G',  min: 'Em',  rootMidi: 67, sig: '1 Sostenido (Fa#)', sharps: ['F#'] },
+    { maj: 'D',  min: 'Bm',  rootMidi: 62, sig: '2 Sostenidos (Fa#, Do#)', sharps: ['F#','C#'] },
+    { maj: 'A',  min: 'F#m', rootMidi: 69, sig: '3 Sostenidos (Fa#, Do#, Sol#)', sharps: ['F#','C#','G#'] },
+    { maj: 'E',  min: 'C#m', rootMidi: 64, sig: '4 Sostenidos (Fa#, Do#, Sol#, Re#)', sharps: ['F#','C#','G#','D#'] },
+    { maj: 'B',  min: 'G#m', rootMidi: 71, sig: '5 Sostenidos (Fa#, Do#, Sol#, Re#, La#)', sharps: ['F#','C#','G#','D#','A#'] },
+    { maj: 'F#', min: 'D#m', rootMidi: 66, sig: '6 Sostenidos / 6 Bemoles (Enarmónico Gb)', sharps: ['F#','C#','G#','D#','A#','E#'] },
+    { maj: 'Db', min: 'Bbm', rootMidi: 61, sig: '5 Bemoles (Sib, Mib, Lab, Reb, Solb)', sharps: ['Bb','Eb','Ab','Db','Gb'] },
+    { maj: 'Ab', min: 'Fm',  rootMidi: 68, sig: '4 Bemoles (Sib, Mib, Lab, Reb)', sharps: ['Bb','Eb','Ab','Db'] },
+    { maj: 'Eb', min: 'Cm',  rootMidi: 63, sig: '3 Bemoles (Sib, Mib, Lab)', sharps: ['Bb','Eb','Ab'] },
+    { maj: 'Bb', min: 'Gm',  rootMidi: 70, sig: '2 Bemoles (Sib, Mib)', sharps: ['Bb','Eb'] },
+    { maj: 'F',  min: 'Dm',  rootMidi: 65, sig: '1 Bemol (Sib)', sharps: ['Bb'] }
+];
+
+let selectedCofIndex = 0;
+
+function polarToCartesian(cx, cy, r, angleDeg) {
+    const rad = (angleDeg - 90) * Math.PI / 180.0;
+    return {
+        x: cx + (r * Math.cos(rad)),
+        y: cy + (r * Math.sin(rad))
+    };
+}
+
+function createAnnularSectorPath(cx, cy, rInner, rOuter, startAngle, endAngle) {
+    const p1 = polarToCartesian(cx, cy, rOuter, endAngle);
+    const p2 = polarToCartesian(cx, cy, rOuter, startAngle);
+    const p3 = polarToCartesian(cx, cy, rInner, startAngle);
+    const p4 = polarToCartesian(cx, cy, rInner, endAngle);
+    const largeArc = (endAngle - startAngle <= 180) ? '0' : '1';
+
+    return [
+        'M', p1.x, p1.y,
+        'A', rOuter, rOuter, 0, largeArc, 0, p2.x, p2.y,
+        'L', p3.x, p3.y,
+        'A', rInner, rInner, 0, largeArc, 1, p4.x, p4.y,
+        'Z'
+    ].join(' ');
+}
+
+function renderCircleOfFifths() {
+    const container = document.getElementById('cofSvgContainer');
+    const details = document.getElementById('cofDetailsPanel');
+    if (!container || !details) return;
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 340 340');
+    svg.style.width = '100%';
+    svg.style.maxWidth = '340px';
+
+    const cx = 170, cy = 170;
+    const prevIdx = (selectedCofIndex + 11) % 12; // Subdominante IV (Izquierda)
+    const nextIdx = (selectedCofIndex + 1) % 12;  // Dominante V (Derecha)
+
+    COF_KEYS.forEach(function(item, i) {
+        const startA = i * 30 - 15;
+        const endA = i * 30 + 15;
+        const midA = i * 30;
+
+        // Colores según relación armónica con la tónica elegida
+        let outerColor = '#1e293b';
+        let innerColor = '#131b29';
+        if (i === selectedCofIndex) {
+            outerColor = '#f59e0b'; // Dorado: Tónica I
+            innerColor = '#d97706'; // Relativo vi
+        } else if (i === prevIdx) {
+            outerColor = '#2563eb'; // Azul: Subdominante IV
+            innerColor = '#1d4ed8'; // Grado ii
+        } else if (i === nextIdx) {
+            outerColor = '#dc2626'; // Rojo: Dominante V
+            innerColor = '#b91c1c'; // Grado iii
+        }
+
+        // Anillo Exterior (Mayores)
+        const outerPath = document.createElementNS(svgNS, 'path');
+        outerPath.setAttribute('d', createAnnularSectorPath(cx, cy, 102, 158, startA, endA));
+        outerPath.setAttribute('fill', outerColor);
+        outerPath.setAttribute('stroke', '#090c12');
+        outerPath.setAttribute('stroke-width', '2');
+        outerPath.setAttribute('class', 'cof-sector');
+        outerPath.addEventListener('click', function() {
+            selectedCofIndex = i;
+            renderCircleOfFifths();
+            playSelectedCofKey(item.rootMidi, false);
+        });
+        svg.appendChild(outerPath);
+
+        const posOuter = polarToCartesian(cx, cy, 130, midA);
+        const txtMaj = document.createElementNS(svgNS, 'text');
+        txtMaj.setAttribute('x', posOuter.x);
+        txtMaj.setAttribute('y', posOuter.y);
+        txtMaj.setAttribute('class', 'cof-text');
+        if (i === selectedCofIndex) txtMaj.setAttribute('fill', '#000');
+        txtMaj.textContent = item.maj;
+        svg.appendChild(txtMaj);
+
+        // Anillo Interior (Relativos Menores)
+        const innerPath = document.createElementNS(svgNS, 'path');
+        innerPath.setAttribute('d', createAnnularSectorPath(cx, cy, 52, 101, startA, endA));
+        innerPath.setAttribute('fill', innerColor);
+        innerPath.setAttribute('stroke', '#090c12');
+        innerPath.setAttribute('stroke-width', '2');
+        innerPath.setAttribute('class', 'cof-sector');
+        innerPath.addEventListener('click', function() {
+            selectedCofIndex = i;
+            renderCircleOfFifths();
+            playSelectedCofKey(item.rootMidi - 3, true);
+        });
+        svg.appendChild(innerPath);
+
+        const posInner = polarToCartesian(cx, cy, 77, midA);
+        const txtMin = document.createElementNS(svgNS, 'text');
+        txtMin.setAttribute('x', posInner.x);
+        txtMin.setAttribute('y', posInner.y);
+        txtMin.setAttribute('class', 'cof-text-minor');
+        txtMin.textContent = item.min;
+        svg.appendChild(txtMin);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(svg);
+
+    // Actualizar Panel de Información de la Tonalidad
+    const cur = COF_KEYS[selectedCofIndex];
+    const sub = COF_KEYS[prevIdx];
+    const dom = COF_KEYS[nextIdx];
+
+    details.innerHTML =
+        '<h4 style="margin-top:0; color:var(--accent-gold);">Tonalidad Activa: ' + cur.maj + ' Mayor / ' + cur.min + ' (Relativa menor)</h4>' +
+        '<p style="font-size:0.86rem; margin-bottom:10px;"><strong>Armadura de Clave:</strong> ' + cur.sig + '</p>' +
+        '<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px;">' +
+            '<div style="background:rgba(37,99,235,0.2); border:1px solid #3b82f6; padding:8px; border-radius:6px; text-align:center;">' +
+                '<small style="color:#93c5fd; font-weight:bold;">SUBDOMINANTE (Izq)</small><br>' +
+                '<strong>IV: ' + sub.maj + '</strong><br><strong>ii: ' + sub.min + '</strong>' +
+            '</div>' +
+            '<div style="background:rgba(245,158,11,0.2); border:1px solid #f59e0b; padding:8px; border-radius:6px; text-align:center;">' +
+                '<small style="color:#fcd34d; font-weight:bold;">TÓNICA (Centro)</small><br>' +
+                '<strong>I: ' + cur.maj + '</strong><br><strong>vi: ' + cur.min + '</strong>' +
+            '</div>' +
+            '<div style="background:rgba(220,38,38,0.2); border:1px solid #ef4444; padding:8px; border-radius:6px; text-align:center;">' +
+                '<small style="color:#fca5a5; font-weight:bold;">DOMINANTE (Der)</small><br>' +
+                '<strong>V: ' + dom.maj + '</strong><br><strong>iii: ' + dom.min + '</strong>' +
+            '</div>' +
+        '</div>' +
+        '<p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:10px;">Haz clic abajo para escuchar la cadencia completa <strong>I (' + cur.maj + ') → IV (' + sub.maj + ') → vi (' + cur.min + ') → V (' + dom.maj + ')</strong> en esta tonalidad:</p>' +
+        '<button class="btn btn-primary" id="playCofCadenceBtn">▶ Escuchar Familia Armónica de ' + cur.maj + ' Mayor</button>';
+
+    const cadBtn = document.getElementById('playCofCadenceBtn');
+    if (cadBtn) {
+        cadBtn.addEventListener('click', function() {
+            const r = cur.rootMidi;
+            const chords = [
+                { b: r - 12, n: [r, r + 4, r + 7] },         // I
+                { b: r - 7,  n: [r, r + 5, r + 9] },         // IV
+                { b: r - 15, n: [r - 3, r, r + 4] },         // vi
+                { b: r - 5,  n: [r - 1, r + 2, r + 7] },     // V
+                { b: r - 12, n: [r, r + 4, r + 7, r + 12] }  // I final
+            ];
+            chords.forEach(function(c, idx) {
+                const t = idx * 0.78;
+                playElectricBass(midiToFreq(c.b), 0.72, 0.42, t);
+                c.n.forEach(function(m) {
+                    playAcousticPiano(midiToFreq(m), 0.85, 0.25, t);
+                    playPluckedGuitar(midiToFreq(m), 0.85, 0.25, t + 0.05);
+                });
+            });
+        });
+    }
+}
+
+function playSelectedCofKey(rootMidi, isMinor) {
+    const intervals = isMinor ? [0, 3, 7, 12] : [0, 4, 7, 12];
+    playElectricBass(midiToFreq(rootMidi - 12), 0.9, 0.42, 0);
+    intervals.forEach(function(intv, i) {
+        playAcousticPiano(midiToFreq(rootMidi + intv), 1.1, 0.28, i * 0.06);
+        playPluckedGuitar(midiToFreq(rootMidi + intv), 1.1, 0.28, i * 0.06);
+    });
+}
+
+// 2. SÍNTESIS DE TOMS DE BATERÍA (AGUDO, MEDIO, BASE) Y ARO (CROSS-STICK)
+function triggerTom(pitchStart, pitchEnd, dur, vol, delaySec) {
+    delaySec = delaySec || 0;
+    vol = vol || 0.75;
+    const ctx = getAudioContext();
+    const start = ctx.currentTime + delaySec;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(pitchStart, start);
+    osc.frequency.exponentialRampToValueAtTime(pitchEnd, start + dur * 0.65);
+
+    gain.gain.setValueAtTime(vol, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+
+    // Ataque de baqueta sobre el parche del Tom
+    const stickNoise = ctx.createBufferSource();
+    stickNoise.buffer = noiseBufferCache;
+    const stickFilter = ctx.createBiquadFilter();
+    stickFilter.type = 'bandpass';
+    stickFilter.frequency.setValueAtTime(pitchStart * 4, start);
+    const stickGain = ctx.createGain();
+    stickGain.gain.setValueAtTime(vol * 0.32, start);
+    stickGain.gain.exponentialRampToValueAtTime(0.001, start + 0.025);
+
+    stickNoise.connect(stickFilter);
+    stickFilter.connect(stickGain);
+    connectToStudioBuses(stickGain, 0.25);
+
+    osc.connect(gain);
+    connectToStudioBuses(gain, 0.30);
+
+    osc.start(start);
+    stickNoise.start(start);
+    osc.stop(start + dur + 0.02);
+    stickNoise.stop(start + 0.03);
+}
+
+function triggerRimClick(vol, delaySec) {
+    delaySec = delaySec || 0;
+    vol = vol || 0.55;
+    const ctx = getAudioContext();
+    const start = ctx.currentTime + delaySec;
+
+    const osc = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(1650, start);
+    osc.frequency.exponentialRampToValueAtTime(420, start + 0.025);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1400, start);
+    filter.Q.setValueAtTime(3.0, start);
+
+    gain.gain.setValueAtTime(vol, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.045);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    connectToStudioBuses(gain, 0.22);
+
+    osc.start(start);
+    osc.stop(start + 0.05);
+}
+
+// Programador de eventos de batería con delay preciso para las demostraciones de Fills
+function scheduleDrumHit(type, delaySec, vol) {
+    setTimeout(function() {
+        if (type === 'kick') triggerKick(vol || 0.88);
+        if (type === 'snare') triggerSnare(vol || 0.50);
+        if (type === 'ghost') triggerSnare(0.14);
+        if (type === 'rim') triggerRimClick(vol || 0.55, 0);
+        if (type === 'hhc') triggerHiHat(false, vol || 0.20);
+        if (type === 'hho') triggerHiHat(true, vol || 0.32);
+        if (type === 'tom1') triggerTom(210, 115, 0.28, vol || 0.75, 0);
+        if (type === 'tom2') triggerTom(160, 85,  0.34, vol || 0.78, 0);
+        if (type === 'tom3') triggerTom(115, 58,  0.42, vol || 0.85, 0);
+    }, delaySec * 1000);
+}
+
+function playDrumDemo(mode) {
+    const s = 0.13; // 1 semicorchea = 130ms
+    if (mode === 'tomfill') {
+        // 2 pulsos de groove + 2 pulsos de Fill descendente en Toms -> Crash + Bombo en el 1
+        [0, 2, 4, 6].forEach(function(step) { scheduleDrumHit('hhc', step * s); });
+        scheduleDrumHit('kick', 0 * s);
+        scheduleDrumHit('snare', 4 * s);
+        scheduleDrumHit('kick', 6 * s);
+        // Fill en pulso 3 y 4 (pasos 8 a 15)
+        scheduleDrumHit('snare', 8 * s, 0.55);
+        scheduleDrumHit('snare', 9 * s, 0.50);
+        scheduleDrumHit('tom1', 10 * s);
+        scheduleDrumHit('tom1', 11 * s);
+        scheduleDrumHit('tom2', 12 * s);
+        scheduleDrumHit('tom2', 13 * s);
+        scheduleDrumHit('tom3', 14 * s);
+        scheduleDrumHit('tom3', 15 * s);
+        // Explosión en el 1 del siguiente compás
+        scheduleDrumHit('kick', 16 * s, 0.95);
+        scheduleDrumHit('hho',  16 * s, 0.40);
+        playElectricBass(midiToFreq(45), 0.9, 0.50, 16 * s);
+    } else if (mode === 'buildup') {
+        // Subida en crescendo de Caja + Tom de Piso + Bombo con silencio dramático en 14-15
+        for (let i = 0; i < 14; i++) {
+            const crescVol = 0.15 + (i / 14) * 0.70;
+            if (i % 2 === 0 || i >= 8) {
+                scheduleDrumHit('snare', i * s, crescVol * 0.7);
+                scheduleDrumHit('tom3',  i * s, crescVol);
+            }
+            if (i % 2 === 0) scheduleDrumHit('kick', i * s, crescVol);
+        }
+        // Silencio en pasos 14 y 15 -> Explosión en 16
+        scheduleDrumHit('kick', 16 * s, 0.98);
+        scheduleDrumHit('hho',  16 * s, 0.42);
+    } else if (mode === 'halftime') {
+        // Compás 1: Groove Normal (Caja en 2 y 4 -> pasos 4 y 12)
+        // Compás 2: Half-Time (Caja solo en el 3 -> paso 24)
+        for (let i = 0; i < 32; i += 2) {
+            scheduleDrumHit('hhc', i * s, 0.18);
+        }
+        // Compás 1 (Normal)
+        scheduleDrumHit('kick', 0 * s);
+        scheduleDrumHit('snare', 4 * s);
+        scheduleDrumHit('kick', 8 * s);
+        scheduleDrumHit('kick', 10 * s);
+        scheduleDrumHit('snare', 12 * s);
+        // Compás 2 (Half-time: caja en el tiempo 3 = paso 24)
+        scheduleDrumHit('hho', 16 * s, 0.30);
+        scheduleDrumHit('kick', 16 * s);
+        scheduleDrumHit('kick', 22 * s);
+        scheduleDrumHit('snare', 24 * s, 0.65);
+    } else if (mode === 'paradiddle') {
+        // R L R R | L R L L repetido con notas fantasma
+        const pattern = [
+            'hhc','ghost','hhc','hhc', 'snare','hhc','ghost','ghost',
+            'hhc','ghost','hhc','hhc', 'snare','hhc','ghost','ghost'
+        ];
+        pattern.forEach(function(hit, i) {
+            scheduleDrumHit(hit, i * s);
+            if (i === 0 || i === 6 || i === 8) scheduleDrumHit('kick', i * s);
+        });
+    } else if (mode === 'leguero') {
+        // Ritmo Folklórico 6/8 (Bombo Legüero: Aro y Parche)
+        const leg = [
+            { t: 'tom3', d: 0.00 }, { t: 'rim', d: 0.22 }, { t: 'rim', d: 0.44 },
+            { t: 'tom3', d: 0.66 }, { t: 'rim', d: 0.88 }, { t: 'tom3', d: 1.10 },
+            { t: 'tom3', d: 1.32 }, { t: 'rim', d: 1.54 }, { t: 'rim', d: 1.76 },
+            { t: 'tom3', d: 1.98 }, { t: 'rim', d: 2.20 }, { t: 'tom3', d: 2.42 }
+        ];
+        leg.forEach(function(hit) {
+            scheduleDrumHit(hit.t, hit.d, 0.80);
+        });
+    }
+}
+
+// 3. LABORATORIO DE BAJO ELÉCTRICO (MÁSTIL DE 4 CUERDAS G-D-A-E Y PATRONES GEOMÉTRICOS)
+const BASS_PATTERNS = {
+    box: {
+        desc: 'La Caja Pentatónica ("The Box"): Mantiene la Raíz grave y usa el rectángulo de Octava (8ª), Séptima menor (b7) y Quinta (5ª) para adornar el final del compás.',
+        // Posiciones relativas al traste raíz en la 4ª cuerda (E): [cuerdaIndex (0=G,1=D,2=A,3=E), offsetTrastes, etiqueta, esRaiz]
+        shapes: [
+            { str: 3, off: 0, lbl: '1ª', root: true },
+            { str: 2, off: 2, lbl: '5ª', root: false },
+            { str: 1, off: 0, lbl: 'b7', root: false },
+            { str: 1, off: 2, lbl: '8ª', root: true },
+            { str: 0, off: 0, lbl: 'b3', root: false },
+            { str: 0, off: 2, lbl: '4ª', root: false }
+        ],
+        seq: [
+            { semi: 0,  t: 0.00, d: 0.35 },
+            { semi: 0,  t: 0.40, d: 0.35 },
+            { semi: 12, t: 0.80, d: 0.18 },
+            { semi: 10, t: 1.00, d: 0.18 },
+            { semi: 7,  t: 1.20, d: 0.18 },
+            { semi: 10, t: 1.40, d: 0.18 },
+            { semi: 0,  t: 1.60, d: 0.65 }
+        ]
+    },
+    triad_maj: {
+        desc: 'El Triángulo Mayor (1 – 3 – 5 – 8): La 3ª Mayor se ubica siempre 1 cuerda más abajo y 1 traste hacia la izquierda de tu Raíz.',
+        shapes: [
+            { str: 3, off: 0,  lbl: '1ª', root: true },
+            { str: 2, off: -1, lbl: '3M', root: false },
+            { str: 2, off: 2,  lbl: '5ª', root: false },
+            { str: 1, off: 2,  lbl: '8ª', root: true }
+        ],
+        seq: [
+            { semi: 0,  t: 0.00, d: 0.38 },
+            { semi: 4,  t: 0.42, d: 0.38 },
+            { semi: 7,  t: 0.84, d: 0.38 },
+            { semi: 12, t: 1.26, d: 0.38 },
+            { semi: 7,  t: 1.68, d: 0.38 },
+            { semi: 4,  t: 2.10, d: 0.38 },
+            { semi: 0,  t: 2.52, d: 0.70 }
+        ]
+    },
+    triad_min: {
+        desc: 'El Triángulo Menor (1 – b3 – 5 – b7): La 3ª menor está a +3 trastes en la misma cuerda (o 1 cuerda abajo y 2 trastes atrás).',
+        shapes: [
+            { str: 3, off: 0, lbl: '1ª', root: true },
+            { str: 3, off: 3, lbl: 'b3', root: false },
+            { str: 2, off: 2, lbl: '5ª', root: false },
+            { str: 1, off: 0, lbl: 'b7', root: false },
+            { str: 1, off: 2, lbl: '8ª', root: true }
+        ],
+        seq: [
+            { semi: 0,  t: 0.00, d: 0.38 },
+            { semi: 3,  t: 0.42, d: 0.38 },
+            { semi: 7,  t: 0.84, d: 0.38 },
+            { semi: 10, t: 1.26, d: 0.38 },
+            { semi: 12, t: 1.68, d: 0.55 },
+            { semi: 0,  t: 2.28, d: 0.70 }
+        ]
+    },
+    octaves: {
+        desc: 'Salto de Octavas (2 cuerdas más abajo y +2 trastes a la derecha): Da máxima propulsión rítmica sin cambiar de nota armónica.',
+        shapes: [
+            { str: 3, off: 0, lbl: '1ª', root: true },
+            { str: 1, off: 2, lbl: '8ª', root: true }
+        ],
+        seq: [
+            { semi: 0,  t: 0.00, d: 0.18 },
+            { semi: 12, t: 0.22, d: 0.18 },
+            { semi: 0,  t: 0.44, d: 0.18 },
+            { semi: 12, t: 0.66, d: 0.18 },
+            { semi: 0,  t: 0.88, d: 0.18 },
+            { semi: 12, t: 1.10, d: 0.18 },
+            { semi: 10, t: 1.32, d: 0.18 },
+            { semi: 7,  t: 1.54, d: 0.45 }
+        ]
+    },
+    walking: {
+        desc: 'Walking Bass con Aproximación Cromática: Recorre 1ª → 3ª → 5ª y en el pulso 4 toca el traste inmediatamente vecino al acorde destino.',
+        shapes: [
+            { str: 3, off: 0,  lbl: '1ª', root: true },
+            { str: 2, off: -1, lbl: '3M', root: false },
+            { str: 2, off: 1,  lbl: 'Cr', root: false },
+            { str: 2, off: 2,  lbl: '5ª', root: false },
+            { str: 1, off: 1,  lbl: '7M', root: false }
+        ],
+        seq: [
+            { semi: 0, t: 0.00, d: 0.42 },
+            { semi: 4, t: 0.45, d: 0.42 },
+            { semi: 7, t: 0.90, d: 0.42 },
+            { semi: 6, t: 1.35, d: 0.42 }, // Cromatismo hacia el V (Sol)
+            { semi: 7, t: 1.80, d: 0.42 },
+            { semi: 4, t: 2.25, d: 0.42 },
+            { semi: 2, t: 2.70, d: 0.42 },
+            { semi: 0, t: 3.15, d: 0.70 }
+        ]
+    },
+    slap: {
+        desc: 'Slap & Pop: Golpe percusivo de pulgar en la Raíz grave (E) alternado con tirón brillante de dedo índice en la Octava y Séptima (D/G).',
+        shapes: [
+            { str: 3, off: 0, lbl: 'T(1ª)', root: true },
+            { str: 1, off: 0, lbl: 'P(b7)', root: false },
+            { str: 1, off: 2, lbl: 'P(8ª)', root: true }
+        ],
+        seq: [
+            { semi: 0,  t: 0.00, d: 0.16 },
+            { semi: 12, t: 0.20, d: 0.14 },
+            { semi: 0,  t: 0.42, d: 0.14 },
+            { semi: 10, t: 0.62, d: 0.16 },
+            { semi: 12, t: 0.84, d: 0.16 },
+            { semi: 7,  t: 1.10, d: 0.18 },
+            { semi: 0,  t: 1.34, d: 0.55 }
+        ]
+    }
+};
+
+function renderBassLaboratory() {
+    const container = document.getElementById('bassFretboardContainer');
+    const rootSel = document.getElementById('bassRootSelect');
+    const patSel = document.getElementById('bassPatternSelect');
+    const descEl = document.getElementById('bassPatternDescription');
+    if (!container || !rootSel || !patSel) return;
+
+    const rootPc = parseInt(rootSel.value, 10);
+    const patKey = patSel.value;
+    const patObj = BASS_PATTERNS[patKey] || BASS_PATTERNS.box;
+
+    if (descEl) descEl.innerHTML = '<strong>Análisis Geométrico:</strong> ' + patObj.desc;
+
+    // 4 cuerdas del Bajo Eléctrico (de aguda 1ª G2=43 a grave 4ª E1=28)
+    const bassStrings = [
+        { label: 'G (1ª)', midi: 43, rowClass: 'bass-row-1' },
+        { label: 'D (2ª)', midi: 38, rowClass: 'bass-row-2' },
+        { label: 'A (3ª)', midi: 33, rowClass: 'bass-row-3' },
+        { label: 'E (4ª)', midi: 28, rowClass: 'bass-row-4' }
+    ];
+
+    // Traste base de la tónica en la 4ª cuerda (E): p.ej., La (pc=9) está en el traste 5 de la cuerda E (pc=4)
+    let baseFretOnE = (rootPc - 4 + 12) % 12;
+    if (baseFretOnE === 0) baseFretOnE = 12; // Mostrar en zona media del mástil para que quepan los trastes -1 y +2
+    if (baseFretOnE > 9) baseFretOnE -= 5;
+
+    container.innerHTML = '';
+
+    bassStrings.forEach(function(str, sIdx) {
+        const row = document.createElement('div');
+        row.className = 'fretboard-row ' + str.rowClass;
+
+        const lbl = document.createElement('div');
+        lbl.className = 'string-label';
+        lbl.textContent = str.label;
+        row.appendChild(lbl);
+
+        for (let fret = 0; fret <= 12; fret++) {
+            const cell = document.createElement('div');
+            cell.className = 'fret-cell';
+
+            const noteMidi = str.midi + fret;
+            const pc = noteMidi % 12;
+
+            const badge = document.createElement('div');
+            badge.className = 'fret-note';
+            badge.textContent = NOTE_NAMES[pc];
+
+            // Comprobar si este traste forma parte de la figura geométrica seleccionada
+            patObj.shapes.forEach(function(sh) {
+                if (sh.str === sIdx && (baseFretOnE + sh.off) === fret) {
+                    badge.classList.add(sh.root ? 'root' : 'active');
+                    badge.textContent = sh.lbl;
+                }
+            });
+
+            badge.addEventListener('click', function() {
+                playElectricBass(midiToFreq(noteMidi), 0.55, 0.50, 0);
+            });
+
+            cell.appendChild(badge);
+            row.appendChild(cell);
+        }
+        container.appendChild(row);
+    });
+
+    const numRow = document.createElement('div');
+    numRow.className = 'fret-numbers';
+    for (let fret = 0; fret <= 12; fret++) {
+        const n = document.createElement('div');
+        n.className = 'fret-num';
+        n.textContent = fret === 0 ? '0 (Aire)' : fret;
+        numRow.appendChild(n);
+    }
+    container.appendChild(numRow);
+}
+
+function playCurrentBassLabPattern() {
+    const rootSel = document.getElementById('bassRootSelect');
+    const patSel = document.getElementById('bassPatternSelect');
+    if (!rootSel || !patSel) return;
+
+    const rootPc = parseInt(rootSel.value, 10);
+    const patObj = BASS_PATTERNS[patSel.value] || BASS_PATTERNS.box;
+    const baseMidi = 36 + rootPc; // Octava grave de Bajo Eléctrico
+
+    // Acompañamiento de Batería + Línea de Bajo
+    patObj.seq.forEach(function(note, idx) {
+        playElectricBass(midiToFreq(baseMidi + note.semi), note.d, 0.52, note.t);
+        if (idx % 2 === 0) scheduleDrumHit('hhc', note.t, 0.18);
+        if (idx === 0) scheduleDrumHit('kick', note.t, 0.85);
+        if (idx === 2) scheduleDrumHit('snare', note.t, 0.45);
+    });
+}
+
+// 4. Demo del Sistema CAGED (Mismo acorde Do Mayor en 4 posiciones del mástil)
+function demoCagedPositions() {
+    const positions = [
+        [48, 52, 55, 60, 64], // Forma C abierta (Trastes 0-3)
+        [48, 55, 60, 64, 67], // Forma A cejilla traste 3
+        [48, 55, 60, 64, 72], // Forma E cejilla traste 8
+        [64, 67, 72, 76]      // Tríada aguda / Forma D (Trastes 12-13)
+    ];
+    positions.forEach(function(voicing, idx) {
+        const baseDelay = idx * 0.95;
+        voicing.forEach(function(midi, nIdx) {
+            playPluckedGuitar(midiToFreq(midi), 0.95, 0.36, baseDelay + nIdx * 0.05);
+        });
+    });
+}
+
+// 5. Enlazar todos los controles nuevos sin conflictos CSP
+function initNewModules16To18() {
+    renderCircleOfFifths();
+    renderBassLaboratory();
+
+    const bRoot = document.getElementById('bassRootSelect');
+    const bPat  = document.getElementById('bassPatternSelect');
+    if (bRoot) bRoot.addEventListener('change', renderBassLaboratory);
+    if (bPat)  bPat.addEventListener('change', renderBassLaboratory);
+
+    document.querySelectorAll('[data-audio]').forEach(function(el) {
+        if (el.dataset.boundExtra) return;
+        const act = el.getAttribute('data-audio');
+        if (!act) return;
+
+        if (act.indexOf('drum:') === 0 || act.indexOf('drumdemo:') === 0 || act === 'basslab:play' || act === 'caged:demo') {
+            el.dataset.boundExtra = 'true';
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                el.classList.add('pad-hit');
+                setTimeout(function() { el.classList.remove('pad-hit'); }, 150);
+
+                if (act === 'drum:kick')    return triggerKick(0.92);
+                if (act === 'drum:snare')   return triggerSnare(0.55);
+                if (act === 'drum:rim')     return triggerRimClick(0.60, 0);
+                if (act === 'drum:hihat-c') return triggerHiHat(false, 0.25);
+                if (act === 'drum:hihat-o') return triggerHiHat(true, 0.38);
+                if (act === 'drum:tom1')    return triggerTom(210, 115, 0.28, 0.80, 0);
+                if (act === 'drum:tom2')    return triggerTom(160, 85,  0.34, 0.82, 0);
+                if (act === 'drum:tom3')    return triggerTom(115, 58,  0.42, 0.88, 0);
+
+                if (act === 'drumdemo:tomfill')    return playDrumDemo('tomfill');
+                if (act === 'drumdemo:buildup')    return playDrumDemo('buildup');
+                if (act === 'drumdemo:halftime')   return playDrumDemo('halftime');
+                if (act === 'drumdemo:paradiddle') return playDrumDemo('paradiddle');
+                if (act === 'drumdemo:leguero')    return playDrumDemo('leguero');
+
+                if (act === 'basslab:play') return playCurrentBassLabPattern();
+                if (act === 'caged:demo')   return demoCagedPositions();
+            });
+        }
+    });
+}
+
+initNewModules16To18();
+window.addEventListener('DOMContentLoaded', initNewModules16To18);
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {

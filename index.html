@@ -1032,6 +1032,105 @@
                 font-size: 0.74rem;
             }
         }
+        /* ESTILOS DEL CÍRCULO DE QUINTAS, PADS DE BATERÍA Y MÁSTIL DE BAJO */
+        .circle-fifths-layout {
+            display: grid;
+            grid-template-columns: minmax(290px, 420px) 1fr;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .cof-svg-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .cof-sector {
+            cursor: pointer;
+            transition: opacity 0.2s, fill 0.2s;
+        }
+
+        .cof-sector:hover {
+            opacity: 0.88;
+        }
+
+        .cof-text {
+            fill: #ffffff;
+            font-family: var(--font-sans);
+            font-weight: 800;
+            font-size: 13px;
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
+        .cof-text-minor {
+            fill: #cbd5e1;
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 11px;
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
+        /* PADS INTERACTIVOS DE BATERÍA */
+        .drum-pads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .drum-pad {
+            background: radial-gradient(circle, #243048 0%, #141b29 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px 10px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.08s, border-color 0.1s, box-shadow 0.1s;
+        }
+
+        .drum-pad:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .drum-pad:active, .drum-pad.pad-hit {
+            transform: scale(0.95);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 16px rgba(6, 182, 212, 0.7);
+            background: radial-gradient(circle, #334669 0%, #1a2438 100%);
+        }
+
+        .drum-pad-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #fff;
+            display: block;
+        }
+
+        .drum-pad-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* CUERDAS GRUESAS DEL MÁSTIL EXCLUSIVO DE BAJO ELÉCTRICO */
+        .bass-row-1::after { height: 2px !important; background: #cbd5e1 !important; }
+        .bass-row-2::after { height: 3px !important; background: #94a3b8 !important; }
+        .bass-row-3::after { height: 4px !important; background: #94a3b8 !important; }
+        .bass-row-4::after { height: 5px !important; background: #64748b !important; }
+
+        @media (max-width: 860px) {
+            .circle-fifths-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 
 
@@ -1078,6 +1177,10 @@
               <li class="nav-item"><a class="nav-link" href="#mod13"><span class="nav-badge badge-lvl4">Nivel 4 · Progresiones</span><br>13. Psicología de Progresiones y Cambios Modales</a></li>
             <li class="nav-item"><a class="nav-link" href="#mod14"><span class="nav-badge badge-lvl4">Nivel 4 · Vientos y Quena</span><br>14. Vientos Andinos (Quena) y Metales</a></li>
             <li class="nav-item"><a class="nav-link" href="#mod15"><span class="nav-badge badge-lvl5">Nivel 5 · Canción y Letra</span><br>15. Prosodia, Letras y Ejercicios de Composición</a></li>
+       <li class="nav-item"><a class="nav-link" href="#mod16"><span class="nav-badge badge-lvl4">Nivel 4 · Mapa Armónico</span><br>16. Círculo de Quintas Interactivo y Espacio 3D</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod17"><span class="nav-badge badge-lvl4">Nivel 4 · Batería Pro</span><br>17. Maestría en Batería: Fills, Toms y Tiempos</a></li>
+            <li class="nav-item"><a class="nav-link" href="#mod18"><span class="nav-badge badge-lvl4">Nivel 4 · Bajo Pro</span><br>18. Maestría en Bajo: Geometría, Walking y Slap</a></li>
+        
         </ul>
     </aside>
 
@@ -2476,6 +2579,271 @@ COMPÁS (2/4 o 4/4)  | [ Cmaj7 (VI) ]              | [ D7 (VII) ]               
             <div class="callout exercise">
                 <div class="callout-title">🏔️ Ejercicio 4: Composición Instrumental con Quena (Pregunta de Viento, Respuesta de Cuerda)</div>
                 <p>En la tonalidad de <strong>Mi menor (acordes <code>Em – C – G – D</code>)</strong>, compón una frase de 2 compases usando únicamente las 5 notas de la pentatónica menor de Mi (<code>Mi - Sol - La - Si - Re</code>) pensada para la <strong>Quena</strong> (notas largas con aire y vibrato). Deja los compases 3 y 4 en silencio de Quena y escribe ahí un arpegio rápido de respuesta en la <strong>Guitarra Acústica o el Piano</strong>.</p>
+            </div>
+        </section>
+        <!-- =================================================================
+             MÓDULO 16: EL CÍRCULO DE QUINTAS INTERACTIVO, VOICINGS Y ESPACIO 3D
+        ================================================================== -->
+        <section id="mod16" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · El Mapa Maestro del Compositor</span>
+                <h2 class="module-title">Módulo 16: El Círculo de Quintas Interactivo, Sistema CAGED y Espacio 3D</h2>
+                <p class="module-subtitle">La brújula geométrica que conecta todas las tonalidades, sus acordes vecinos, sus armaduras y su ubicación espacial en la mezcla.</p>
+            </div>
+
+            <h3>16.1 ¿Qué es realmente el Círculo de Quintas y por qué es una calculadora de canciones?</h3>
+            <p>El <strong>Círculo de Quintas</strong> ordena las 12 notas musicales avanzando de <strong>5ª Justa en 5ª Justa (7 semitonos)</strong> en el sentido de las agujas del reloj (<code>Do → Sol → Re → La → Mi → Si → Fa#...</code>), y avanzando de <strong>4ª Justa en 4ª Justa (5 semitonos)</strong> en sentido contrario (<code>Do → Fa → Sib → Mib → Lab...</code>).</p>
+            <ul>
+                <li><strong>La Regla de la Ventana de 6 Acordes Vecinos:</strong> Cuando eliges cualquier nota del anillo exterior como tu Tonalidad Mayor (<code>I</code>), la casilla a su izquierda inmediata es siempre tu <strong>Subdominante (<code>IV</code>)</strong>, la casilla a su derecha inmediata es siempre tu <strong>Dominante (<code>V</code>)</strong>, y las tres casillas justo debajo en el anillo interior son tus <strong>tres acordes menores (<code>ii</code>, <code>vi</code> y <code>iii</code>)</strong>. ¡Nunca tienes que memorizar tablas de acordes si visualizas esa ventana de 6 casillas contiguas!</li>
+                <li><strong>El Orden de los Sostenidos (Sentido Horario):</strong> Cada paso a la derecha añade 1 sostenido (<code>Fa# - Do# - Sol# - Re# - La# - Mi# - Si#</code>).</li>
+                <li><strong>El Orden de los Bemoles (Sentido Antihorario):</strong> Cada paso a la izquierda añade 1 bemol (<code>Sib - Mib - Lab - Reb - Solb - Dob - Fab</code>).</li>
+            </ul>
+
+            <!-- WIDGET INTERACTIVO: CÍRCULO DE QUINTAS SVG -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.15rem;">Círculo de Quintas Interactivo con Audición Armónica</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Haz clic en cualquier tonalidad de la rueda para iluminar su familia de 6 acordes, ver su armadura y escuchar cada grado en vivo.</p>
+                    </div>
+                </div>
+
+                <div class="circle-fifths-layout">
+                    <div class="cof-svg-wrapper" id="cofSvgContainer">
+                        <!-- Renderizado dinámicamente por JS -->
+                    </div>
+                    <div class="card" id="cofDetailsPanel" style="border-left: 4px solid var(--accent-gold);">
+                        <!-- Información dinámica de la tonalidad seleccionada -->
+                    </div>
+                </div>
+            </div>
+
+            <h3>16.2 El Sistema CAGED en la Guitarra y el Espacio 3D de Producción</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Cómo Tocar el Mismo Acorde en 5 Zonas del Mástil (CAGED)</h4>
+                    <p>En la guitarra existen 5 dibujos básicos de acordes abiertos: <strong>C (Do), A (La), G (Sol), E (Mi) y D (Re)</strong>. Si pones una cejilla con el dedo índice, esos 5 dibujos se encadenan cubriendo todo el diapasón. Por ejemplo, para tocar un <strong>Do Mayor (C)</strong> sin chocar con otro guitarrista:</p>
+                    <ul>
+                        <li><strong>Posición 1 (Trastes 0-3):</strong> Forma de <code>C</code> abierta (Cálida y completa).</li>
+                        <li><strong>Posición 2 (Trastes 3-5):</strong> Forma de <code>A</code> con cejilla en traste 3 (Potente en medios).</li>
+                        <li><strong>Posición 3 (Trastes 8-10):</strong> Forma de <code>E</code> con cejilla en traste 8 o tríada en cuerdas 1-2-3 (Cortante y brillante).</li>
+                    </ul>
+                    <button class="btn-audio" data-audio="caged:demo">🔊 Escuchar el mismo acorde Do Mayor subiendo por 4 posiciones del mástil</button>
+                </div>
+
+                <div class="card">
+                    <h4>La Caja Tridimensional del Arreglista (X, Y, Z)</h4>
+                    <p>Un arreglo profesional posiciona cada instrumento en tres ejes espaciales:</p>
+                    <ul>
+                        <li><strong>Eje Vertical Y (Frecuencia):</strong> Bajo abajo (60-200 Hz), Piano/Acústica al medio (250-1.2 kHz), Eléctrica aguda y Platos arriba (2-12 kHz).</li>
+                        <li><strong>Eje Horizontal X (Paneo Estéreo):</strong> Bombo, Caja, Bajo y Voz Principal van clavados al <strong>Centro</strong>. Las guitarras rítmicas, pianos y coros se abren a la <strong>Izquierda y Derecha</strong>.</li>
+                        <li><strong>Eje de Profundidad Z (Reverb):</strong> Cuanto más seco (sin reverb) suena un instrumento, más "pegado a la cara" del oyente se percibe (Bajo, Batería, Voz). Cuanta más reverb tiene (Quena, Cuerdas, Pads), más profundo y lejano se sitúa.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 17: MAESTRÍA EN BATERÍA — RUDIMENTOS, FILLS, TOMS Y HALF-TIME
+        ================================================================== -->
+        <section id="mod17" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · Dirección Rítmica y Percusión</span>
+                <h2 class="module-title">Módulo 17: Maestría en Batería — Diseño de Fills (Redobles), Rudimentos y Cambios de Sensación Temporal</h2>
+                <p class="module-subtitle">Cómo piensa un baterista profesional: construcción de transiciones en Toms, uso de rudimentos en el groove y control de la velocidad percibida.</p>
+            </div>
+
+            <h3>17.1 El Arte del "Fill" (Redoble de Transición): Cuándo, Cómo y Por Qué</h3>
+            <p>Un <strong>Fill (Relleno o Redoble)</strong> no es un momento para que el baterista presuma de velocidad; es una <strong>rampa arquitectónica que anuncia el final de un ciclo (de 4, 8 o 16 compases) y prepara el impacto de la siguiente sección</strong>.</p>
+            <ul>
+                <li><strong>La Regla del 3 + 1 (o 7 + 1):</strong> Mantén el groove implacable durante los primeros 3 compases y medio, y ejecuta el Fill únicamente en los <strong>últimos 1 o 2 tiempos del cuarto compás</strong>.</li>
+                <li><strong>Psicología de la Dirección en los Toms:</strong>
+                    <ul>
+                        <li><strong>Fill Descendente (Tom Agudo → Tom Medio → Tom Base de Piso):</strong> Como baja de frecuencia de agudo a grave, transmite peso, gravedad y caída. Es ideal para entrar a un <strong>Estribillo pesado, un Puente o un final</strong>.</li>
+                        <li><strong>Fill Ascendente o "Build-up" (Caja + Tom de Piso en corcheas/semicorcheas subiendo de volumen):</strong> Crea una rampa de adrenalina en el último compás del Pre-Estribillo antes de explotar en el Crash del tiempo 1.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="tab-block"><span class="tab-label">3 Fills Clásicos de Estudio en el Compás 4 (Subdivisión de Semicorcheas: 1 e + a | 2 e + a | 3 e + a | 4 e + a)</span>
+1. FILL DESCENDENTE DE 2 TIEMPOS (Entra en el tiempo 3 del compás 4 -> Cae al Crash del compás 1):
+   Conteo : | 1  e  +  a  | 2  e  +  a  || 3   e   +   a   | 4   e   +   a   || -> [1: CRASH + BOMBO]
+   Cuerpo : | (Groove normal...)        || Sn  Sn  T1  T1  | T2  T2  FT  FT  || -> [C + K]
+            (Sn = Caja | T1 = Tom Agudo | T2 = Tom Medio | FT = Tom Base de Piso)
+
+2. BUILD-UP DE PRE-ESTRIBILLO (Crescendo de "<" de suave a fortísimo con Caja + Tom de Piso + Bombo):
+   Conteo : | 1   e   +   a   | 2   e   +   a   | 3   e   +   a   | 4   e   +   a   |
+   Manos  : | Sn  .   Sn  .   | Sn  .   Sn  .   | Sn  Sn  Sn  Sn  | Sn  Sn  [SILENCIO EN 4+] |
+   Pies   : | K   .   K   .   | K   .   K   .   | K   .   K   .   | K   .   [SILENCIO EN 4+] |
+   *Truco Pro: Dejar un silencio total en la última corchea (4+) antes del Estribillo multiplica por diez el impacto del Crash.
+
+3. EL RUDIMENTO REY EN EL GROOVE: EL PARADIDDLE (R L R R | L R L L)
+   Mano Derecha (R) en Hi-Hat | Mano Izquierda (L) en Caja (acentuando el tiempo 2 y haciendo notas fantasma suaves en las demás):
+   Conteo : | 1   e   +   a   | 2       e   +   a   |
+   Manos  : | R   L   R   R   | L(Fuerte) R   L   L | (Crea un groove orgánico imposible de lograr con golpes simples).</div>
+
+            <h3>17.2 Half-Time (Medio Tiempo) vs. Double-Time (Doble Tiempo)</h3>
+            <p>¿Cómo haces que el Puente o el Desglose (<em>Breakdown</em>) de tu canción se sienta repentinamente gigantesco y lento sin cambiar los BPM del metrónomo? Cambiando la ubicación de la <strong>Caja (Snare)</strong>:</p>
+            <ul>
+                <li><strong>Tiempo Normal (Standard Feel):</strong> Bombo en <code>1 y 3</code>, Caja en <strong><code>2 y 4</code></strong>.</li>
+                <li><strong>Half-Time Feel (Sensación de Mitad de Velocidad):</strong> Bombo en el <code>1</code>, y la Caja golpea <strong>únicamente en el tiempo <code>3</code></strong>. La canción parece ir a la mitad de velocidad, abriendo un espacio panorámico enorme para la voz o un solo.</li>
+                <li><strong>Double-Time Feel (Sensación de Doble Velocidad):</strong> La Caja golpea en todos los contratiempos de corchea (<code>1+, 2+, 3+, 4+</code>), duplicando la energía en finales de Rock, Punk, Country o Pop-Rock.</li>
+            </ul>
+
+            <!-- WIDGET INTERACTIVO: BATERÍA DE 8 CUERPOS + REPRODUCTOR DE FILLS Y CAMBIOS DE TIEMPO -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.15rem;">Estudio Interactivo de Batería: 8 Cuerpos en Vivo y Demostrador de Fills</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Toca cada tambor o plato directamente con el ratón/dedo, o escucha cómo suenan los Fills y cambios a Half-Time en contexto.</p>
+                    </div>
+                </div>
+
+                <!-- 8 PADS DE BATERÍA INTERACTIVOS -->
+                <div class="drum-pads-grid">
+                    <div class="drum-pad" data-audio="drum:kick">
+                        <span class="drum-pad-title" style="color:var(--accent-gold);">🥁 BOMBO (Kick)</span>
+                        <span class="drum-pad-sub">50–100 Hz · Pecho</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:snare">
+                        <span class="drum-pad-title" style="color:var(--accent-red);">🥁 CAJA (Snare)</span>
+                        <span class="drum-pad-sub">Backbeat 2 y 4</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:rim">
+                        <span class="drum-pad-title" style="color:var(--accent-cyan);">🥢 ARO (Cross-Stick)</span>
+                        <span class="drum-pad-sub">Íntimo / Balada / Bossa</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:hihat-c">
+                        <span class="drum-pad-title" style="color:var(--accent-cyan);">📀 HI-HAT CERRADO</span>
+                        <span class="drum-pad-sub">Pulso de Estrofa</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:hihat-o">
+                        <span class="drum-pad-title" style="color:var(--accent-gold);">📀 CRASH / ABIERTO</span>
+                        <span class="drum-pad-sub">Explosión de Estribillo</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:tom1">
+                        <span class="drum-pad-title" style="color:var(--accent-blue);">🥁 TOM 1 (Agudo)</span>
+                        <span class="drum-pad-sub">Inicio de Fills (12")</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:tom2">
+                        <span class="drum-pad-title" style="color:var(--accent-purple);">🥁 TOM 2 (Medio)</span>
+                        <span class="drum-pad-sub">Cuerpo de Fills (13")</span>
+                    </div>
+                    <div class="drum-pad" data-audio="drum:tom3">
+                        <span class="drum-pad-title" style="color:var(--accent-green);">🥁 TOM BASE (Piso)</span>
+                        <span class="drum-pad-sub">Peso Tribal (16")</span>
+                    </div>
+                </div>
+
+                <!-- BOTONERA DE DEMOSTRACIÓN DE TÉCNICAS DE BATERÍA -->
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border-color);">
+                    <button class="btn-audio" data-audio="drumdemo:tomfill">🔊 1. Groove + Fill Descendente en Toms → Crash</button>
+                    <button class="btn-audio" data-audio="drumdemo:buildup">🔊 2. Subida de Pre-Estribillo (Build-up + Silencio en 4+)</button>
+                    <button class="btn-audio" data-audio="drumdemo:halftime">🔊 3. Comparar: Groove Normal vs. Half-Time (Caja en el 3)</button>
+                    <button class="btn-audio" data-audio="drumdemo:paradiddle">🔊 4. Groove de Paradiddle con Notas Fantasma</button>
+                    <button class="btn-audio" data-audio="drumdemo:leguero">🔊 5. Ritmo Folklórico 6/8 (Bombo Legüero: Aro + Parche)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             MÓDULO 18: MAESTRÍA EN BAJO ELÉCTRICO — GEOMETRÍA, WALKING, SLAP Y FILLS
+        ================================================================== -->
+        <section id="mod18" class="module-section">
+            <div class="module-header">
+                <span class="nav-badge badge-lvl4">Nivel 4 · Arquitectura del Grave</span>
+                <h2 class="module-title">Módulo 18: Maestría en Bajo Eléctrico — La Geometría de las 4 Cuerdas, Walking Bass, Slap y Fills</h2>
+                <p class="module-subtitle">Por qué el diapasón del bajo es 100% simétrico y cómo usar figuras geométricas infalibles para crear líneas memorables en cualquier estilo.</p>
+            </div>
+
+            <h3>18.1 El Superpoder del Bajo: La Simetría Absoluta por Cuartas</h3>
+            <p>En la guitarra de 6 cuerdas, entre la 3ª cuerda (Sol) y la 2ª cuerda (Si) hay una 3ª Mayor que deforma todos los dibujos de escalas y acordes. En cambio, <strong>el Bajo Eléctrico de 4 cuerdas (<code>E1 - A1 - D2 - G2</code>) está afinado íntegramente en Cuartas Justas exactas (5 semitonos entre cualquier par de cuerdas vecinas)</strong>.</p>
+            <p>¿Qué significa esto para ti como compositor y bajista? Que <strong>una misma figura geométrica (un triángulo Mayor, un triángulo menor, una octava o una caja pentatónica) tiene exactamente la misma forma en cualquier traste y en cualquier cuerda del instrumento</strong>.</p>
+
+            <div class="grid-3">
+                <div class="card">
+                    <h4>1. La Figura de Quinta y Octava ("El Rayo")</h4>
+                    <p>Desde tu nota Raíz (ej. traste 3 en cuerda E = Sol):</p>
+                    <ul>
+                        <li>Bajas <strong>1 cuerda y avanzas +2 trastes</strong>: tienes siempre la <strong>5ª Justa</strong> (Re).</li>
+                        <li>Bajas <strong>2 cuerdas y avanzas +2 trastes</strong>: tienes siempre la <strong>Octava (8ª)</strong> (Sol agudo).</li>
+                        <li>Mismo traste pero <strong>1 cuerda más arriba (hacia el techo)</strong>: tienes otra <strong>5ª Justa grave</strong> debajo de tu raíz (típico en Country, Cumbia y Bolero).</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4>2. El Triángulo Mayor vs. Triángulo Menor</h4>
+                    <p>Para dibujar cualquier acorde sin pensar en nombres de notas:</p>
+                    <ul>
+                        <li><strong>Tríada Mayor (1 - 3 - 5):</strong> Raíz con el dedo medio (ej. traste 3), la <strong>3ª Mayor</strong> está 1 cuerda abajo y <strong>1 traste hacia atrás (traste 2)</strong>, y la <strong>5ª</strong> está 2 trastes adelante (traste 5).</li>
+                        <li><strong>Tríada Menor (1 - b3 - 5):</strong> Raíz con el dedo índice (ej. traste 3), la <strong>3ª menor</strong> está en la misma cuerda <strong>+3 trastes adelante (traste 6)</strong> (o 1 cuerda abajo y 2 trastes atrás).</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4>3. La Caja Pentatónica ("The Box") para Bass Fills</h4>
+                    <p>¿Cómo hacen los bajistas de Funk, Soul, Pop y Rock esos adornos deliciosos en el tiempo 4 sin perder el pulso? Usan un <strong>rectángulo de 4 notas</strong>: desde la Raíz (1ª), suben a la Octava (8ª), bajan 2 trastes en esa misma cuerda a la <strong>7ª menor (b7)</strong>, y suben una cuerda a la <strong>5ª Justa (5)</strong>.</p>
+                </div>
+            </div>
+
+            <h3>18.2 Walking Bass (Bajo Caminante) y Slap & Pop explicados paso a paso</h3>
+            <div class="tab-block"><span class="tab-label">Fórmulas Prácticas de Walking Bass, Caja de Fills y Slap en Tablatura de 4 Cuerdas (G-D-A-E)</span>
+1. LA FÓRMULA DEL WALKING BASS EN 4 NEGRAS (Conectar C -> Am -> Dm -> G7):
+   Pulso 1 = SIEMPRE la Raíz del acorde | Pulso 2 = 3ª o 5ª | Pulso 3 = Nota de escala | Pulso 4 = Aproximación a 1 traste del destino!
+   Compás       : | [ C ]               | [ Am ]              | [ Dm ]              | [ G7 ]     -> (C)   |
+   G|-----------|---------------------|---------------------|---------------------|---------------------|
+   D|-----------|-------2-----5-------|-------------5---6---|-0-----------0-------|-------3-----2-------|
+   A|-----------|-3---------------2---|-0---3---7-----------|-----3---2-------0---|---------------------|
+   E|-----------|---------------------|---------------------|---------------------|-3---------------3---|
+   Análisis     : Do - Mi - Sol - Si(p) | La - Do - Mi -Sol#(c)| Re - Do - Si - La   | Sol - Fa - Mi -Sol->Do
+
+2. LA CAJA DE FILLS PENTATÓNICA ("THE BOX") EN LA MENOR (Am):
+   Pulso 1 al 3 mantienen el groove grave en La1; en el pulso 4 responde en la Octava aguda (cuerdas D y G):
+   G|-----------|-------------5---7---|  <-- Cuerda G: Traste 5 (Do = b3) y Traste 7 (Re = 4ª)
+   D|-----------|---------7-----------|  <-- Cuerda D: Traste 5 (Sol = b7) y Traste 7 (La = Octava)
+   A|-----------|---------------------|
+   E|-----------|-5---5---------------|  <-- Cuerda E: Traste 5 (La grave = Raíz)
+
+3. SLAP (T = Golpe de Pulgar en Raíz) & POP (P = Tirón de Dedo Índice en Octava) + NOTAS MUERTAS (x):
+   G|-----------|-----7-------7-------| (P = Pop agudo en Octava)
+   D|-----------|---------------------|
+   A|-----------|---------------------|
+   E|-----------|-5-------x-------5---| (T = Thumb en Raíz, x = Golpe percusivo apagando cuerdas)</div>
+
+            <!-- WIDGET INTERACTIVO: VISUALIZADOR Y REPRODUCTOR EXCLUSIVO DE BAJO ELÉCTRICO (4 CUERDAS) -->
+            <div class="interactive-widget">
+                <div class="widget-header">
+                    <div>
+                        <strong style="color:var(--accent-gold); font-size:1.15rem;">Laboratorio Interactivo de Bajo Eléctrico (Mástil de 4 Cuerdas G–D–A–E)</strong>
+                        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Selecciona una figura geométrica o técnica de bajo para ver los intervalos iluminados sobre las 4 cuerdas gruesas y escuchar la línea en acción.</p>
+                    </div>
+                    <div class="widget-controls">
+                        <label style="font-size:0.84rem;">Tónica:</label>
+                        <select id="bassRootSelect">
+                            <option value="0">C (Do)</option>
+                            <option value="2">D (Re)</option>
+                            <option value="4">E (Mi)</option>
+                            <option value="5">F (Fa)</option>
+                            <option value="7">G (Sol)</option>
+                            <option value="9" selected>A (La)</option>
+                        </select>
+                        <label style="font-size:0.84rem;">Patrón / Geometría:</label>
+                        <select id="bassPatternSelect">
+                            <option value="box">1. La Caja Pentatónica ("The Box" + Fill en el 4)</option>
+                            <option value="triad_maj">2. El Triángulo Mayor (Arpegio 1 - 3 - 5 - 8)</option>
+                            <option value="triad_min">3. El Triángulo Menor (Arpegio 1 - b3 - 5 - b7)</option>
+                            <option value="octaves">4. Octavas Propulsivas (Disco / Synth-Pop / Funk)</option>
+                            <option value="walking">5. Walking Bass con Aproximación Cromática</option>
+                            <option value="slap">6. Slap & Pop (Pulgar en Raíz + Pop en Octava y b7)</option>
+                        </select>
+                        <button class="btn btn-primary" data-audio="basslab:play">▶ Escuchar Línea de Bajo + Batería</button>
+                    </div>
+                </div>
+
+                <div id="bassPatternDescription" style="margin-bottom:12px; padding:10px 14px; background:rgba(0,0,0,0.35); border-radius:6px; font-size:0.86rem; color:var(--accent-cyan);"></div>
+
+                <!-- MÁSTIL EXCLUSIVO DE 4 CUERDAS DE BAJO -->
+                <div class="fretboard-wrapper" id="bassFretboardContainer"></div>
             </div>
         </section>
     </main>
